@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/justin-guan/discord-announcer/issues"
   },
-  "homepage": "https://github.com/justin-guan/discord-announcer#readme"
+  "homepage": "https://github.com/justin-guan/discord-announcer#readme",
+  "dependencies": {
+    "discord.js": "^9.3.1"
+  }
 }
