@@ -58,4 +58,4 @@ if (!fs.existsSync(__dirname + '/voice/leave')) {
   fs.mkdirSync(__dirname + '/voice/leave');
 }
 
-client.login(process.env.DISCORD_KEY);
+client.login(process.env.DISCORD_TOKEN);
