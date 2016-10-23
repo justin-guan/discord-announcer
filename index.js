@@ -33,6 +33,8 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   if (newMember.user.client === client && newMember.user.bot) { //Bot got moved
     channel = newMember.voiceChannel;
     console.log('I got moved to a new channel');
+  } else if (oldMember.mute !== newMember.mute || oldMember.deafen !== newMember.deafen) {
+    return; // No notification on mute and deafen
   } else if (newMember.voiceChannel !== channel) { // No voiceChannelID implies that the user has left
     console.log(`${oldMember.user.username} has left the channel`);
     tts.tts(`${oldMember.user.username} has left the channel`, `voice/leave/${oldMember.user.username}.mp3`, () => {
