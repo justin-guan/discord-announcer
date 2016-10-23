@@ -14,7 +14,7 @@ const tts = function(text, path, callback) {
     .on('error', function(err) {
       console.error(err);
     })
-    .pipe(writable)
-}
+    .pipe(writable);
+};
 
 exports.tts = tts;
