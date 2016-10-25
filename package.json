@@ -22,6 +22,7 @@
   "homepage": "https://github.com/justin-guan/discord-announcer#readme",
   "dependencies": {
     "discord.js": "^9.3.1",
+    "moment": "^2.15.2",
     "request": "^2.75.0"
   }
 }
