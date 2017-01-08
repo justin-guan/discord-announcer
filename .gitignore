@@ -38,3 +38,5 @@ jspm_packages
 
 ENV.sh
 voice
+test.json
+test2.json
