@@ -3,7 +3,6 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const fs = require('fs');
 const tts = require(__dirname + '/text-to-mp3.js');
-const moment = require('moment');
 
 const commandModifier = '!';
 let channel;
@@ -13,7 +12,14 @@ client.on('ready', () => {
 });
 
 client.on('message', (message) => {
+  if (!message.content.startsWith(commandModifier) || message.author.bot) {
+    return;
+  }
   if (message.content.startsWith(commandModifier + 'summon')) {
+    if (!message.member.voiceChannel) {
+      message.reply("You need to be in a voice channel to summon me!");
+      return;
+    }
     (message.member.voiceChannel).join()
       .then(connection => {
         console.log(`Connected: ${connection.ready}`);
@@ -23,7 +29,7 @@ client.on('message', (message) => {
         });
       })
       .catch(console.log);
-  } else if (message.content.startsWith(commandModifier + 'unsummon')) {
+  } else if (message.content.startsWith(commandModifier + 'banish')) {
     if (channel) {
       channel.connection.disconnect();
     }
@@ -31,19 +37,20 @@ client.on('message', (message) => {
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-  if (newMember.user.client === client && newMember.user.bot) { //Bot got moved
-    console.log(`Someone tried to move me at ${moment().format()}!`);
-  } else if (oldMember.mute !== newMember.mute || oldMember.deafen !== newMember.deafen) {
-    return; // No notification on mute and deafen
-  } else if (newMember.voiceChannel !== channel) { // No voiceChannelID implies that the user has left
-    console.log(`${oldMember.user.username} has left the channel`);
-    tts.tts(`${oldMember.user.username} has left the channel`, `voice/leave/${oldMember.user.username}.mp3`, () => {
-      channel.connection.playFile(__dirname + `/voice/leave/${oldMember.user.username}.mp3`);
-    });
-  } else if (newMember.voiceChannel === channel){ // User has joined some channel
+  if (!channel) { // Bot is not connected
+    return;
+  }
+  if (newMember.user.id === client.user.id && oldMember.voiceChannelID !== newMember.voiceChannelID) { // Bot voiceStateUpdate
+    process.exit(1); // No support for moving a bot to another channel without banishing and resummoning
+  } else if (oldMember.voiceChannelID !== channel.id && newMember.voiceChannelID === channel.id) {
     console.log(`${newMember.user.username} has joined the channel`);
     tts.tts(`${newMember.user.username} has joined the channel`, `voice/join/${newMember.user.username}.mp3`, () => {
       channel.connection.playFile(__dirname + `/voice/join/${newMember.user.username}.mp3`);
+    });
+  } else if (oldMember.voiceChannelID === channel.id && newMember.voiceChannelID !== channel.id) {
+    console.log(`${oldMember.user.username} has left the channel`);
+    tts.tts(`${oldMember.user.username} has left the channel`, `voice/leave/${oldMember.user.username}.mp3`, () => {
+      channel.connection.playFile(__dirname + `/voice/leave/${oldMember.user.username}.mp3`);
     });
   }
 });
