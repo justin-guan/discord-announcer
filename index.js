@@ -22,7 +22,7 @@ client.on('message', (message) => {
     }
     (message.member.voiceChannel).join()
       .then(connection => {
-        banished = false
+        banished = false;
         console.log(`Connected: ${connection.ready}`);
         channel = connection.channel;
         tts.tts(`Hello World!`, `voice/hello.mp3`, () => {
