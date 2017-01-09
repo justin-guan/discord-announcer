@@ -5,7 +5,7 @@ const fs = require('fs');
 const tts = require(__dirname + '/text-to-mp3.js');
 
 const commandModifier = '!';
-let channel;
+let channel, banished = true;
 
 client.on('ready', () => {
   console.log('Ready!');
@@ -22,6 +22,7 @@ client.on('message', (message) => {
     }
     (message.member.voiceChannel).join()
       .then(connection => {
+        banished = false
         console.log(`Connected: ${connection.ready}`);
         channel = connection.channel;
         tts.tts(`Hello World!`, `voice/hello.mp3`, () => {
@@ -31,13 +32,16 @@ client.on('message', (message) => {
       .catch(console.log);
   } else if (message.content.startsWith(commandModifier + 'banish')) {
     if (channel) {
-      channel.connection.disconnect();
+      banished = true;
+      channel.connection.disconnect(() => {
+        channel = undefined;
+      });
     }
   }
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-  if (!channel) { // Bot is not connected
+  if (!channel || banished) { // Bot is not connected
     return;
   }
   if (newMember.user.id === client.user.id && oldMember.voiceChannelID !== newMember.voiceChannelID) { // Bot voiceStateUpdate
