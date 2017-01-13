@@ -49,4 +49,4 @@ set DISCORD_TOKEN=<DISCORD_TOKEN>
 * `!banish` - Forces the bot to leave the voice channel it is connected to
 
 ## Notes
-There is no support for moving the bot to another voice channel without using the banish and summoning commands. You **must** banish the bot before resummoning it. Moving the bot via drag and drop in the discord interface will cause the bot to crash.
+There is no support for moving the bot to another voice channel without using the banish and summoning commands. You **must** banish the bot before resummoning it. Moving the bot via drag and drop in the discord interface will cause the bot to become unresponsive.
