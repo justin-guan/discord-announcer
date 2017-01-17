@@ -7,6 +7,18 @@ const tts = require(__dirname + '/text-to-mp3.js');
 const commandModifier = '!';
 let channel, banished = true;
 
+if (!fs.existsSync(__dirname + '/voice')) {
+  fs.mkdirSync(__dirname + '/voice');
+}
+if (!fs.existsSync(__dirname + '/voice/join')) {
+  fs.mkdirSync(__dirname + '/voice/join');
+}
+if (!fs.existsSync(__dirname + '/voice/leave')) {
+  fs.mkdirSync(__dirname + '/voice/leave');
+}
+
+client.login(process.env.DISCORD_TOKEN);
+
 client.on('ready', () => {
   console.log('Ready!');
 });
@@ -16,27 +28,35 @@ client.on('message', (message) => {
     return;
   }
   if (message.content.startsWith(commandModifier + 'summon')) {
-    if (!message.member.voiceChannel) {
-      message.reply("You need to be in a voice channel to summon me!");
-      return;
-    }
-    (message.member.voiceChannel).join()
-      .then(connection => {
-        banished = false;
-        console.log(`Connected: ${connection.ready}`);
-        channel = connection.channel;
-        tts.tts(`Hello World!`, `voice/hello.mp3`, () => {
-          connection.playFile(__dirname + '/voice/hello.mp3');
-        });
-      })
-      .catch(console.log);
-  } else if (message.content.startsWith(commandModifier + 'banish')) {
-    if (channel) {
-      banished = true;
-      channel.connection.disconnect(() => {
-        channel = undefined;
+    message.delete()
+      .then(msg => {
+        if (!msg.member.voiceChannel) {
+          msg.reply("You need to be in a voice channel to summon me!");
+          return;
+        }
+        (msg.member.voiceChannel).join()
+          .then(connection => {
+            banished = false;
+            console.log(`Connected: ${connection.ready}`);
+            channel = connection.channel;
+            tts.tts(`Hello World!`, `voice/hello.mp3`, () => {
+              connection.playFile(__dirname + '/voice/hello.mp3');
+            });
+          })
+          .catch(console.log);
       });
-    }
+  } else if (message.content.startsWith(commandModifier + 'banish')) {
+    message.delete()
+      .then(msg => {
+        if (!banished) {
+          banished = true;
+          channel.connection.disconnect(() => {
+            channel = undefined;
+          });
+        } else {
+          msg.reply("I'm not in a voice channel right now!");
+        }
+      });
   }
 });
 
@@ -58,15 +78,3 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
     });
   }
 });
-
-if (!fs.existsSync(__dirname + '/voice')) {
-  fs.mkdirSync(__dirname + '/voice');
-}
-if (!fs.existsSync(__dirname + '/voice/join')) {
-  fs.mkdirSync(__dirname + '/voice/join');
-}
-if (!fs.existsSync(__dirname + '/voice/leave')) {
-  fs.mkdirSync(__dirname + '/voice/leave');
-}
-
-client.login(process.env.DISCORD_TOKEN);
