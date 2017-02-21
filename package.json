@@ -23,6 +23,7 @@
   "dependencies": {
     "discord.js": "^11.0.0",
     "erlpack": "github:hammerandchisel/erlpack",
+    "http": "0.0.0",
     "moment": "^2.15.2",
     "opusscript": "0.0.1",
     "request": "^2.75.0"

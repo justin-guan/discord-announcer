@@ -2,6 +2,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const fs = require('fs');
+const http = require('http');
 const tts = require(__dirname + '/text-to-mp3.js');
 
 const commandModifier = '!';
@@ -78,3 +79,7 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
     });
   }
 });
+
+setInterval(function() {
+  http.get("http://discord-announcer.herokuapp.com");
+}, 300000); // every 5 minutes (300000)
