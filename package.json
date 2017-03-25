@@ -28,7 +28,8 @@
     "moment": "^2.18.1",
     "node-opus": "^0.2.4",
     "opusscript": "0.0.3",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "winston": "^2.3.1"
   },
   "engines": {
     "node": "^6.0.0"
