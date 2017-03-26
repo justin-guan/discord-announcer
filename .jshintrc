@@ -88,5 +88,5 @@
 
     // Custom Globals
     "globals"       : {},       // additional predefined global variables
-    "predef"        : [ "-Promise" ]
+    "predef"        : [ "-Promise" ] // Allow Promise libraries to handle promises
 }
