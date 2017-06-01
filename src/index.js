@@ -4,8 +4,9 @@ process.title = 'Discord Announcer';
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const Promise = require('bluebird');
-const tts = require(__dirname + '/text-to-mp3.js');
+const tts = require(__dirname + '/voicesynth.js');
 const LOGGER = require(__dirname + '/logger.js');
+const config = require(__dirname + '/../config/config.js');
 
 const commandModifier = '?';
 let channel, banished = true;
@@ -102,5 +103,7 @@ process.on('SIGQUIT', () => {
 
 function cleanUp() {
   LOGGER.warn(`SIGTERM detected! Attempting to save process state...`);
-  client.destroy();
+  client.destroy()
+    .then(process.exit(0))
+    .catch(process.exit(1));
 }

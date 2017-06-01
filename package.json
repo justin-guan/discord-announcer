@@ -32,6 +32,7 @@
     "libsodium-wrappers": "^0.5.1",
     "node-opus": "^0.2.6",
     "opusscript": "0.0.3",
+    "request": "^2.81.0",
     "uws": "^0.14.5",
     "winston": "^2.3.1"
   },
