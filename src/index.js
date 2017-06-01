@@ -3,28 +3,12 @@ process.title = 'Discord Announcer';
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const http = require('http');
-const moment = require('moment');
 const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
 const tts = require(__dirname + '/text-to-mp3.js');
 const LOGGER = require(__dirname + '/logger.js');
 
 const commandModifier = '?';
 let channel, banished = true;
-
-if (!fs.existsSync(__dirname + '/../voice')) {
-  fs.mkdirSync(__dirname + '/../voice');
-}
-if (!fs.existsSync(__dirname + '/../voice/join')) {
-  fs.mkdirSync(__dirname + '/../voice/join');
-}
-if (!fs.existsSync(__dirname + '/../voice/leave')) {
-  fs.mkdirSync(__dirname + '/../voice/leave');
-}
-if (!fs.existsSync(__dirname + '/../logs')) {
-  fs.mkdirSync(__dirname + '/../logs');
-}
 
 client.login(process.env.DISCORD_TOKEN)
   .then(() => {
@@ -120,7 +104,3 @@ function cleanUp() {
   LOGGER.warn(`SIGTERM detected! Attempting to save process state...`);
   client.destroy();
 }
-
-setInterval(function() {
-  http.get("http://discord-announcer.herokuapp.com");
-}, 300000); // every 5 minutes (300000)
