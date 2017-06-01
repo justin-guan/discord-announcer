@@ -1,6 +1,6 @@
 'use strict';
 const request = require('request');
-const fs = require('fs-extra');
+const fs = require('fs');
 const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
 
