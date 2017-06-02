@@ -27,6 +27,13 @@ const conf = convict({
       default: "",
       env: "DISCORD_TOKEN"
     }
+  },
+  command: {
+    trigger: {
+      doc: "The trigger prefix for a command",
+      default: "!",
+      env: "TRIGGER_PREFIX"
+    }
   }
 });
 

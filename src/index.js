@@ -4,46 +4,55 @@ process.title = 'Discord Announcer';
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const Promise = require('bluebird');
-const tts = require(__dirname + '/voicesynth.js');
+const voicesynth = Promise.promisifyAll(require(__dirname + '/voicesynth.js'));
 const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
 
-const commandModifier = '?';
-let channel, banished = true;
+const commands = new Map();
 
-client.login(process.env.DISCORD_TOKEN)
-  .then(() => {
-    LOGGER.info(`Client login success`);
-  })
-  .catch((err) => {
-    LOGGER.error(`${err}`);
-  });
+(function init() {
+  commands.set(config.get('command.trigger') + 'help', showHelp);
+  client.login(config.get('discord.token'))
+    .then(LOGGER.info('Client login success'))
+    .catch(LOGGER.error);
+})();
 
 client.on('ready', () => {
-  LOGGER.info(`Client ready`);
+  LOGGER.info('Client ready');
 });
 
 client.on('message', (message) => {
-  if (!message.content.startsWith(commandModifier) || message.author.bot) {
+  if (message.author.bot || !commands.get(message.content)) {
     return;
   }
-  if (message.content.startsWith(commandModifier + 'summon')) {
-    summon(message);
-  } else if (message.content.startsWith(commandModifier + 'banish')) {
-    message.delete()
-      .then(msg => {
-        if (!banished) {
-          banished = true;
-          channel.connection.disconnect(() => {
-            channel = undefined;
-          });
-        } else {
-          msg.reply("I'm not in a voice channel right now!");
-        }
-      });
-  }
+  commands.get(message.content)(message);
 });
 
+client.on('voiceStateUpdate', (oldMember, newMember) => {
+  if (!newMember.voiceChannel || newMember.id === client.user.id) {
+    return;
+  }
+  say(newMember, true);
+});
+
+function say(member, join) {
+  let name = member.nickname ? member.nickname : member.user.username;
+  member.voiceChannel.join().then(() => {
+    if (join) {
+      console.log((member.voiceChannel.connection));
+      voicesynth.synthAsync(`${name} joined the channel`,
+        __dirname + `/../voice/join/${name}.mp3`)
+        .then();
+    } else {
+      voicesynth.synthAsync(`${name} left the channel`,
+        __dirname + `/../voice/leave/${name}.mp3`);
+      member.voiceChannel.connection.playFile(
+        __dirname + `/../voice/leave/${name}.mp3`);
+    }
+  });
+}
+
+/*
 function summon(message) {
   message.delete()
     .then(msg => {
@@ -88,7 +97,7 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
     });
   }
 });
-
+*/
 process.on('SIGTERM', () => {
   cleanUp();
 });
@@ -101,8 +110,12 @@ process.on('SIGQUIT', () => {
   cleanUp();
 });
 
+function showHelp(message) {
+  message.reply("Help documentation coming soon...");
+}
+
 function cleanUp() {
-  LOGGER.warn(`SIGTERM detected! Attempting to save process state...`);
+  LOGGER.warn('Termination detected! Attempting to save process state...');
   client.destroy()
     .then(process.exit(0))
     .catch(process.exit(1));
