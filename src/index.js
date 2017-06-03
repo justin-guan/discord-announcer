@@ -36,9 +36,12 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   if (!newMember.voiceChannel || newMember.id === client.user.id) {
     return;
   }
+  /*
   sayJoinAsync(newMember).then(() => {
     sayLeaveAsync(oldMember);
   });
+  */
+ sayJoinAsync(newMember);
 });
 
 function sayJoin(member, callback) {
