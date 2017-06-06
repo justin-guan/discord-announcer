@@ -22,6 +22,7 @@ process.on('SIGINT', cleanUp);
 process.on('SIGQUIT', cleanUp);
 
 client.on('ready', () => {
+  client.user.setGame('with Node.js');
   LOGGER.info('Client ready');
 });
 
