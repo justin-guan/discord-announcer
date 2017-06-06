@@ -27,13 +27,12 @@ client.on('ready', () => {
   LOGGER.info('Client ready');
 });
 
-client.on('message', (message) => {
+client.on('message', async (message) => {
   if (message.author.bot || !commands.get(message.content)) {
     return;
   }
-  message.delete().then(() => {
-    commands.get(message.content)(message);
-  });
+  const msg = await message.delete();
+  commands.get(message.content)(msg);
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
