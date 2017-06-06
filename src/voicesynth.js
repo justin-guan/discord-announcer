@@ -7,13 +7,16 @@ const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
 
 const synth = function(text, path) {
+  if (fs.existsSync(path)) {
+    return Promise.resolve(path);
+  }
   return new Promise((resolve, reject) => {
     const writable = fs.createWriteStream(path);
     writable.on('error', (err) => {
       reject(err);
     });
     writable.on('finish', () => {
-      resolve();
+      resolve(path);
     });
     request
       .get(config.get('voiceRSS.url') + text)

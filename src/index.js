@@ -42,56 +42,38 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   if (!newMember.voiceChannel || newMember.id === client.user.id) {
     return;
   }
-  /*
-  sayJoinAsync(newMember).then(() => {
-    sayLeaveAsync(oldMember);
+  sayJoin(newMember, () => {
+    sayLeave(oldMember);
   });
-  */
- sayJoin(newMember);
 });
 
-function sayJoin(member) {
+async function sayJoin(member, callback) {
   let name = member.nickname ? member.nickname : member.user.username;
-  let connection;
-  member.voiceChannel.join().then(c => {
-    console.log(c);
-    c.playFile(__dirname + `/../voice/join/${name}.mp3`);
-  });
-/*
-  member.voiceChannel.join()
-  .then(c => {
-    connection = c;
-    voicesynth.synth(`${name} joined the channel`,
-        __dirname + `/../voice/join/${name}.mp3`);
-  })
-  .then(() => {
-    connection.playFile(
-      __dirname + `/../voice/join/${name}.mp3`);
-  })
-  .then(() => {
+  const connection = await member.voiceChannel.join();
+  const path = await voicesynth.synth(
+    `${name} joined the channel`,
+    __dirname + `/../voice/join/${name}.mp3`);
+  const dispatcher = await connection.playFile(path);
+  dispatcher.on('end', () => {
     connection.disconnect();
+    if (typeof callback === 'function') {
+      callback();
+    }
   });
-  */
 }
 
-function sayLeave(member) {
+async function sayLeave(member, callback) {
   let name = member.nickname ? member.nickname : member.user.username;
-  let connection;
-  member.voiceChannel.join()
-  .then(c => {
-    connection = c;
-    voicesynth.synth(`${name} joined the channel`,
-        __dirname + `/../voice/leave/${name}.mp3`);
-    LOGGER.info('Created mp3');
-  })
-  .then(() => {
-    LOGGER.info('Playing File');
-    connection.playFile(
-      __dirname + `/../voice/leave/${name}.mp3`);
-  })
-  .then(() => {
-    LOGGER.info('Disconnecting');
+  const connection = await member.voiceChannel.join();
+  const path = await voicesynth.synth(
+    `${name} left the channel`,
+    __dirname + `/../voice/leave/${name}.mp3`);
+  const dispatcher = await connection.playFile(path);
+  dispatcher.on('end', () => {
     connection.disconnect();
+    if (typeof callback === 'function') {
+      callback();
+    }
   });
 }
 
