@@ -74,13 +74,12 @@ async function sayLeave(member, callback) {
   });
 }
 
-
 function showHelp(message) {
   message.reply("Help documentation coming soon...");
 }
 
 function cleanUp() {
-  LOGGER.warn('Termination detected! Attempting to save process state...');
+  LOGGER.warn('Termination signal detected! Exiting...');
   client.destroy()
     .then(process.exit(0))
     .catch(process.exit(1));
