@@ -15,10 +15,15 @@ const sayLeaveAsync = Promise.promisify(sayLeave);
 (function init() {
   commands.set(config.get('command.trigger') + 'help', showHelp);
   commands.set(config.get('command.trigger') + 'test', test);
+  commands.set(config.get('command.trigger') + 'summon', summon);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
 })();
+
+process.on('SIGTERM', cleanUp);
+process.on('SIGINT', cleanUp);
+process.on('SIGQUIT', cleanUp);
 
 client.on('ready', () => {
   LOGGER.info('Client ready');
@@ -28,7 +33,9 @@ client.on('message', (message) => {
   if (message.author.bot || !commands.get(message.content)) {
     return;
   }
-  commands.get(message.content)(message);
+  message.delete().then(() => {
+    commands.get(message.content)(message);
+  });
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
@@ -40,79 +47,77 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
     sayLeaveAsync(oldMember);
   });
   */
- sayJoinAsync(newMember);
+ sayJoin(newMember);
 });
 
-function sayJoin(member, callback) {
+function sayJoin(member) {
   let name = member.nickname ? member.nickname : member.user.username;
-  member.voiceChannel.join().then((connection) => {
+  let connection;
+  member.voiceChannel.join().then(c => {
+    console.log(c);
+    c.playFile(__dirname + `/../voice/join/${name}.mp3`);
+  });
+/*
+  member.voiceChannel.join()
+  .then(c => {
+    connection = c;
     voicesynth.synth(`${name} joined the channel`,
-        __dirname + `/../voice/join/${name}.mp3`)
-      .then(() => {
-        return connection.playFile(
-          __dirname + `/../voice/join/${name}.mp3`);
-      })
-      .then(() => {
-        connection.disconnect();
-      })
-      .then(() => {
-        if (typeof callback === 'function') {
-          callback();
-        }
-      });
+        __dirname + `/../voice/join/${name}.mp3`);
+  })
+  .then(() => {
+    connection.playFile(
+      __dirname + `/../voice/join/${name}.mp3`);
+  })
+  .then(() => {
+    connection.disconnect();
   });
+  */
 }
 
-function sayLeave(member, callback) {
+function sayLeave(member) {
   let name = member.nickname ? member.nickname : member.user.username;
-  member.voiceChannel.join().then((connection) => {
-    voicesynth.synth(`${name} left the channel`,
-        __dirname + `/../voice/leave/${name}.mp3`)
-      .then(() => {
-        connection.playFile(
-          __dirname + `/../voice/leave/${name}.mp3`);
-      })
-      .then(() => {
-        connection.disconnect();
-      })
-      .then(() => {
-        if (typeof callback === 'function') {
-          callback();
-        }
-      });
+  let connection;
+  member.voiceChannel.join()
+  .then(c => {
+    connection = c;
+    voicesynth.synth(`${name} joined the channel`,
+        __dirname + `/../voice/leave/${name}.mp3`);
+    LOGGER.info('Created mp3');
+  })
+  .then(() => {
+    LOGGER.info('Playing File');
+    connection.playFile(
+      __dirname + `/../voice/leave/${name}.mp3`);
+  })
+  .then(() => {
+    LOGGER.info('Disconnecting');
+    connection.disconnect();
   });
 }
 
-process.on('SIGTERM', cleanUp);
-process.on('SIGINT', cleanUp);
-process.on('SIGQUIT', cleanUp);
 
 function showHelp(message) {
   message.reply("Help documentation coming soon...");
 }
 
+let cx;
+function summon(message) {
+  message.delete().then(msg => {
+    if (!msg.member.voiceChannel) {
+      msg.reply('You need to be in a voice channel to summon me!');
+      return;
+    } else {
+      msg.member.voiceChannel.join().then(connection => {
+        cx = connection;
+      });
+    }
+  })
+}
+
 function test(message) {
-  message.delete()
-    .then(msg => {
-      if (!msg.member.voiceChannel) {
-        msg.reply('You need to be in a voice channel to summon me!');
-        return;
-      }
-      (msg.member.voiceChannel).join()
-        .then(connection => {
-          LOGGER.info(`Joined ${msg.member.voiceChannel.name}`);
-          connection.playFile(__dirname + '/../voice/hello.mp3');
-        })
-        .then(connection => {
-          connection.disconnect();
-        })
-        .catch((err) => {
-          LOGGER.error(`${err}`);
-        });
-    })
-    .catch((err) => {
-      LOGGER.warn(`${err}`);
-    });
+  message.delete().then(msg => {
+    cx.playFile(__dirname + `/../voice/hello.mp3`);
+  });
 }
 
 function cleanUp() {
