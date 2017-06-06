@@ -8,10 +8,13 @@ const voicesynth = require(__dirname + '/voicesynth.js');
 const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
 
+//Commands
+const help = require(__dirname + '/commands/help.js');
+
 const commands = new Map();
 
 (function init() {
-  commands.set(config.get('command.trigger') + 'help', showHelp);
+  commands.set(config.get('command.trigger') + 'help', help.showHelp);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
@@ -71,10 +74,6 @@ async function sayLeave(member, callback) {
       callback();
     }
   });
-}
-
-function showHelp(message) {
-  message.reply("Help documentation coming soon...");
 }
 
 function cleanUp() {
