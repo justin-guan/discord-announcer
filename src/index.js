@@ -9,8 +9,6 @@ const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
 
 const commands = new Map();
-const sayJoinAsync = Promise.promisify(sayJoin);
-const sayLeaveAsync = Promise.promisify(sayLeave);
 
 (function init() {
   commands.set(config.get('command.trigger') + 'help', showHelp);
