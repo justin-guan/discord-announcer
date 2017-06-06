@@ -14,8 +14,6 @@ const sayLeaveAsync = Promise.promisify(sayLeave);
 
 (function init() {
   commands.set(config.get('command.trigger') + 'help', showHelp);
-  commands.set(config.get('command.trigger') + 'test', test);
-  commands.set(config.get('command.trigger') + 'summon', summon);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
@@ -80,26 +78,6 @@ async function sayLeave(member, callback) {
 
 function showHelp(message) {
   message.reply("Help documentation coming soon...");
-}
-
-let cx;
-function summon(message) {
-  message.delete().then(msg => {
-    if (!msg.member.voiceChannel) {
-      msg.reply('You need to be in a voice channel to summon me!');
-      return;
-    } else {
-      msg.member.voiceChannel.join().then(connection => {
-        cx = connection;
-      });
-    }
-  })
-}
-
-function test(message) {
-  message.delete().then(msg => {
-    cx.playFile(__dirname + `/../voice/hello.mp3`);
-  });
 }
 
 function cleanUp() {
