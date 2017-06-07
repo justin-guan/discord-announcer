@@ -10,7 +10,7 @@ async function sayJoin(member) {
   const path = await voicesynth.synth(
     `${name} joined the channel`,
     __dirname + `/../voice/join/${name}.mp3`);
-  await connection.playFile(path);
+  connection.playFile(path);
 }
 
 async function sayLeave(member) {
@@ -19,7 +19,7 @@ async function sayLeave(member) {
   const path = await voicesynth.synth(
     `${name} left the channel`,
     __dirname + `/../voice/leave/${name}.mp3`);
-  await connection.playFile(path);
+  connection.playFile(path);
 }
 
 function shutdown(client) {
