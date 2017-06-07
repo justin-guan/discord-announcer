@@ -4,9 +4,9 @@ process.title = 'Discord Announcer';
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const Promise = require('bluebird');
-const voicesynth = require(__dirname + '/voicesynth.js');
 const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
+const util = require(__dirname + '/util.js');
 
 //Commands
 const help = require(__dirname + '/commands/help/help.js');
@@ -23,9 +23,9 @@ const commands = new Map();
     .catch(LOGGER.error);
 })();
 
-process.on('SIGTERM', cleanUp);
-process.on('SIGINT', cleanUp);
-process.on('SIGQUIT', cleanUp);
+process.on('SIGTERM', () => {util.shutdown(client);});
+process.on('SIGINT', () => {util.shutdown(client);});
+process.on('SIGQUIT', () => {util.shutdown(client);});
 
 client.on('ready', () => {
   client.user.setGame('with Node.js');
@@ -50,34 +50,9 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   }
   if (newMember.voiceChannel && client.voiceConnections.exists('channel', newMember.voiceChannel)) {
     LOGGER.info(`${newMember.id} joined voice channel ${newMember.voiceChannelID}`);
-    sayJoin(newMember);
+    util.sayJoin(newMember);
   } else if (oldMember.voiceChannel && client.voiceConnections.exists('channel', oldMember.voiceChannel)) {
     LOGGER.info(`${oldMember.id} left voice channel ${oldMember.voiceChannelID}`);
-    sayLeave(oldMember);
+    util.sayLeave(oldMember);
   }
 });
-
-async function sayJoin(member) {
-  const name = member.nickname ? member.nickname : member.user.username;
-  const connection = member.voiceChannel.connection;
-  const path = await voicesynth.synth(
-    `${name} joined the channel`,
-    __dirname + `/../voice/join/${name}.mp3`);
-  await connection.playFile(path);
-}
-
-async function sayLeave(member) {
-  const name = member.nickname ? member.nickname : member.user.username;
-  const connection = member.voiceChannel.connection;
-  const path = await voicesynth.synth(
-    `${name} left the channel`,
-    __dirname + `/../voice/leave/${name}.mp3`);
-  await connection.playFile(path);
-}
-
-function cleanUp() {
-  LOGGER.warn('Termination signal detected! Exiting...');
-  client.destroy()
-    .then(process.exit(0))
-    .catch(process.exit(1));
-}

@@ -13,9 +13,11 @@ const synth = function(text, path) {
   return new Promise((resolve, reject) => {
     const writable = fs.createWriteStream(path);
     writable.on('error', (err) => {
+      LOGGER.error(`Failed to create file at ${path}`);
       reject(err);
     });
     writable.on('finish', () => {
+      LOGGER.info(`New file created at ${path}`);
       resolve(path);
     });
     request
