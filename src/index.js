@@ -44,39 +44,35 @@ client.on('message', async (message) => {
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-  if (!newMember.voiceChannel || newMember.id === client.user.id) {
+  if (newMember.id === client.user.id ||
+    oldMember.voiceChannelID === newMember.voiceChannelID) {
     return;
+  }
+  if (newMember.voiceChannel && client.voiceConnections.exists('channel', newMember.voiceChannel)) {
+    LOGGER.info(`${newMember.id} joined voice channel ${newMember.voiceChannelID}`);
+    sayJoin(newMember);
+  } else if (oldMember.voiceChannel && client.voiceConnections.exists('channel', oldMember.voiceChannel)) {
+    LOGGER.info(`${oldMember.id} left voice channel ${oldMember.voiceChannelID}`);
+    sayLeave(oldMember);
   }
 });
 
-async function sayJoin(member, callback) {
-  let name = member.nickname ? member.nickname : member.user.username;
-  const connection = await member.voiceChannel.join();
+async function sayJoin(member) {
+  const name = member.nickname ? member.nickname : member.user.username;
+  const connection = member.voiceChannel.connection;
   const path = await voicesynth.synth(
     `${name} joined the channel`,
     __dirname + `/../voice/join/${name}.mp3`);
-  const dispatcher = await connection.playFile(path);
-  dispatcher.on('end', () => {
-    connection.disconnect();
-    if (typeof callback === 'function') {
-      callback();
-    }
-  });
+  await connection.playFile(path);
 }
 
-async function sayLeave(member, callback) {
-  let name = member.nickname ? member.nickname : member.user.username;
-  const connection = await member.voiceChannel.join();
+async function sayLeave(member) {
+  const name = member.nickname ? member.nickname : member.user.username;
+  const connection = member.voiceChannel.connection;
   const path = await voicesynth.synth(
     `${name} left the channel`,
     __dirname + `/../voice/leave/${name}.mp3`);
-  const dispatcher = await connection.playFile(path);
-  dispatcher.on('end', () => {
-    connection.disconnect();
-    if (typeof callback === 'function') {
-      callback();
-    }
-  });
+  await connection.playFile(path);
 }
 
 function cleanUp() {
