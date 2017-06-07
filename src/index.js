@@ -3,124 +3,56 @@ process.title = 'Discord Announcer';
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const http = require('http');
-const moment = require('moment');
 const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
-const tts = require(__dirname + '/text-to-mp3.js');
 const LOGGER = require(__dirname + '/logger.js');
+const config = require(__dirname + '/../config/config.js');
+const util = require(__dirname + '/util.js');
 
-const commandModifier = '?';
-let channel, banished = true;
+//Commands
+const help = require(__dirname + '/commands/help/help.js');
+const announcer = require(__dirname + '/commands/announce/announce.js');
 
-if (!fs.existsSync(__dirname + '/../voice')) {
-  fs.mkdirSync(__dirname + '/../voice');
-}
-if (!fs.existsSync(__dirname + '/../voice/join')) {
-  fs.mkdirSync(__dirname + '/../voice/join');
-}
-if (!fs.existsSync(__dirname + '/../voice/leave')) {
-  fs.mkdirSync(__dirname + '/../voice/leave');
-}
-if (!fs.existsSync(__dirname + '/../logs')) {
-  fs.mkdirSync(__dirname + '/../logs');
-}
+const commands = new Map();
 
-client.login(process.env.DISCORD_TOKEN)
-  .then(() => {
-    LOGGER.info(`Client login success`);
-  })
-  .catch((err) => {
-    LOGGER.error(`${err}`);
-  });
+(function init() {
+  commands.set(config.get('command.trigger') + 'help', help.showHelp);
+  commands.set(config.get('command.trigger') + 'summon', announcer.summon);
+  commands.set(config.get('command.trigger') + 'banish', announcer.banish);
+  client.login(config.get('discord.token'))
+    .then(LOGGER.info('Client login success'))
+    .catch(LOGGER.error);
+})();
+
+process.on('SIGTERM', () => {util.shutdown(client);});
+process.on('SIGINT', () => {util.shutdown(client);});
+process.on('SIGQUIT', () => {util.shutdown(client);});
 
 client.on('ready', () => {
-  LOGGER.info(`Client ready`);
+  client.user.setGame('with Node.js');
+  LOGGER.info('Client ready');
 });
 
-client.on('message', (message) => {
-  if (!message.content.startsWith(commandModifier) || message.author.bot) {
+client.on('message', async (message) => {
+  if (message.author.bot || !commands.get(message.content)) {
     return;
   }
-  if (message.content.startsWith(commandModifier + 'summon')) {
-    summon(message);
-  } else if (message.content.startsWith(commandModifier + 'banish')) {
-    message.delete()
-      .then(msg => {
-        if (!banished) {
-          banished = true;
-          channel.connection.disconnect(() => {
-            channel = undefined;
-          });
-        } else {
-          msg.reply("I'm not in a voice channel right now!");
-        }
-      });
-  }
+  const msg = await message.delete();
+  commands.get(message.content)({
+    "client": client,
+    "message": msg
+  });
 });
-
-function summon(message) {
-  message.delete()
-    .then(msg => {
-      if (!msg.member.voiceChannel) {
-        msg.reply('You need to be in a voice channel to summon me!');
-        return;
-      }
-      (msg.member.voiceChannel).join()
-        .then(connection => {
-          banished = false;
-          LOGGER.info(`Joined ${msg.member.voiceChannel.name}`);
-          channel = connection.channel;
-          tts.tts(`Hello World!`, __dirname + `/../voice/hello.mp3`, () => {
-            connection.playFile(__dirname + '/../voice/hello.mp3');
-          });
-        })
-        .catch((err) => {
-          LOGGER.error(`${err}`);
-        });
-    })
-    .catch((err) => {
-      LOGGER.warn(`${err}`);
-    });
-}
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
-  if (!channel || banished) { // Bot is not connected
+  if (newMember.id === client.user.id ||
+    oldMember.voiceChannelID === newMember.voiceChannelID) {
     return;
   }
-  if (newMember.user.id === client.user.id && oldMember.voiceChannelID !== newMember.voiceChannelID) { // Bot voiceStateUpdate
-    LOGGER.error(`Bot was incorrectly moved. Recovering from unhandled error by exitting...`);
-    process.exit(1); // No support for moving a bot to another channel without banishing and resummoning
-  } else if (oldMember.voiceChannelID !== channel.id && newMember.voiceChannelID === channel.id) {
-    LOGGER.info(`${newMember.user.username} has joined the channel`);
-    tts.tts(`${newMember.user.username} has joined the channel`, __dirname + `/../voice/join/${newMember.user.username}.mp3`, () => {
-      channel.connection.playFile(__dirname + `/../voice/join/${newMember.user.username}.mp3`);
-    });
-  } else if (oldMember.voiceChannelID === channel.id && newMember.voiceChannelID !== channel.id) {
-    LOGGER.info(`${oldMember.user.username} has left the channel`);
-    tts.tts(`${oldMember.user.username} has left the channel`, __dirname + `/../voice/leave/${oldMember.user.username}.mp3`, () => {
-      channel.connection.playFile(__dirname + `/../voice/leave/${oldMember.user.username}.mp3`);
-    });
+  if (newMember.voiceChannel && client.voiceConnections.exists('channel', newMember.voiceChannel)) {
+    LOGGER.info(`${newMember.id} joined voice channel ${newMember.voiceChannelID}`);
+    util.sayJoin(newMember);
+  } else if (oldMember.voiceChannel && client.voiceConnections.exists('channel', oldMember.voiceChannel)) {
+    LOGGER.info(`${oldMember.id} left voice channel ${oldMember.voiceChannelID}`);
+    util.sayLeave(oldMember);
   }
 });
-
-process.on('SIGTERM', () => {
-  cleanUp();
-});
-
-process.on('SIGINT', () => {
-  cleanUp();
-});
-
-process.on('SIGQUIT', () => {
-  cleanUp();
-});
-
-function cleanUp() {
-  LOGGER.warn(`SIGTERM detected! Attempting to save process state...`);
-  client.destroy();
-}
-
-setInterval(function() {
-  http.get("http://discord-announcer.herokuapp.com");
-}, 300000); // every 5 minutes (300000)

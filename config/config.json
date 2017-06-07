@@ -1,0 +1,12 @@
+{
+  "voiceRSS": {
+    "url": "http://api.voicerss.org/?key=[VOICE_KEY]&hl=en-us&c=mp3&f=ulaw_44khz_stereo&r=1&src=",
+    "key": ""
+  },
+  "discord": {
+    "token": ""
+  },
+  "command": {
+    "trigger": "!"
+  }
+}
