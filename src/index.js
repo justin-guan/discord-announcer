@@ -9,12 +9,15 @@ const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
 
 //Commands
-const help = require(__dirname + '/commands/help.js');
+const help = require(__dirname + '/commands/help/help.js');
+const announcer = require(__dirname + '/commands/announce/announce.js');
 
 const commands = new Map();
 
 (function init() {
   commands.set(config.get('command.trigger') + 'help', help.showHelp);
+  commands.set(config.get('command.trigger') + 'summon', announcer.summon);
+  commands.set(config.get('command.trigger') + 'banish', announcer.banish);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
@@ -34,16 +37,16 @@ client.on('message', async (message) => {
     return;
   }
   const msg = await message.delete();
-  commands.get(message.content)(msg);
+  commands.get(message.content)({
+    "client": client,
+    "message": msg
+  });
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
   if (!newMember.voiceChannel || newMember.id === client.user.id) {
     return;
   }
-  sayJoin(newMember, () => {
-    sayLeave(oldMember);
-  });
 });
 
 async function sayJoin(member, callback) {
