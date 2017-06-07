@@ -35,7 +35,10 @@ process.on('SIGQUIT', () => {util.shutdown(client);});
 
 client.on('ready', () => {
   client.user.setGame('with Node.js');
-  LOGGER.info('Client ready');
+  util.reconnect(client).then(() => {
+    util.save(client);
+    LOGGER.info('Client ready');
+  });
 });
 
 client.on('message', async (message) => {
@@ -49,7 +52,7 @@ client.on('message', async (message) => {
       "message": msg
     });
   } catch (e) {
-    console.log('?');
+    LOGGER.info(`Failed to execute command ${msg.content}`);
   }
 });
 

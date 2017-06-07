@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs-extra');
+const Promise = require('bluebird');
 const voicesynth = require(__dirname + '/voicesynth.js');
 const LOGGER = require(__dirname + '/logger.js');
 
@@ -43,8 +44,27 @@ function save(client) {
     });
 }
 
+function reconnect(client) {
+  let promises = [];
+  for (let id in JSON.parse(fs.readFileSync(__dirname + '/connections.json'))) {
+    let def = Promise.defer();
+    promises.push(def.promise);
+    LOGGER.info(`Trying to reconnect to voice channel ${id}...`);
+    client.channels.get(id).join()
+    .then(() => {
+      LOGGER.info(`Successfully joined voice channel ${id}!`);
+      def.resolve();
+    })
+    .catch(err => {
+      LOGGER.warn(`Failed to join voice channel ${id}`);
+    });
+  }
+  return Promise.all(promises);
+}
+
 
 exports.sayJoin = sayJoin;
 exports.sayLeave = sayLeave;
 exports.shutdown = shutdown;
 exports.save = save;
+exports.reconnect = reconnect;
