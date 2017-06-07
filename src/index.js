@@ -43,10 +43,14 @@ client.on('message', async (message) => {
     return;
   }
   const msg = await message.delete();
-  commands.get(message.content)({
-    "client": client,
-    "message": msg
-  });
+  try {
+    commands.get(msg.content)({
+      "client": client,
+      "message": msg
+    });
+  } catch (e) {
+    console.log('?');
+  }
 });
 
 client.on('voiceStateUpdate', (oldMember, newMember) => {
