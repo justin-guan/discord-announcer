@@ -35,7 +35,11 @@ process.on('SIGQUIT', () => {util.shutdown(client);});
 
 client.on('ready', () => {
   client.user.setGame('with Node.js');
-  util.reconnect(client).then(() => {
+  util.reconnect(client)
+  .catch(() => {
+    LOGGER.warn('Failed to rejoin some channels...');
+  })
+  .finally(() => {
     util.save(client);
     LOGGER.info('Client ready');
   });

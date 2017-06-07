@@ -50,6 +50,11 @@ function reconnect(client) {
     let def = Promise.defer();
     promises.push(def.promise);
     LOGGER.info(`Trying to reconnect to voice channel ${id}...`);
+    if (client.channels.get(id) === undefined) {
+      LOGGER.warn(`${id} is not a channel`);
+      def.reject();
+      continue;
+    }
     client.channels.get(id).join()
     .then(() => {
       LOGGER.info(`Successfully joined voice channel ${id}!`);
@@ -57,6 +62,7 @@ function reconnect(client) {
     })
     .catch(err => {
       LOGGER.warn(`Failed to join voice channel ${id}`);
+      def.reject();
     });
   }
   return Promise.all(promises);
