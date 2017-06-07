@@ -44,3 +44,8 @@ set DISCORD_TOKEN=<DISCORD_TOKEN>
 ## Commands
 * `!summon` - Summons the bot into the caller's voice channel
 * `!banish` - Forces the bot to leave the voice channel it is connected to
+* `!ld` - Plays "They're all dead!"
+* `!tucker` - Plays crybaby
+* `!tobi` - Plays "It's a disastah!"
+* `!zhou` - Plays "Patience from zhou"
+* `!waow` - Plays "WAOW!"
