@@ -11,6 +11,7 @@ const util = require(__dirname + '/util.js');
 //Commands
 const help = require(__dirname + '/commands/help/help.js');
 const announcer = require(__dirname + '/commands/announce/announce.js');
+const memes = require(__dirname + '/commands/memes/memes.js');
 
 const commands = new Map();
 
@@ -18,6 +19,11 @@ const commands = new Map();
   commands.set(config.get('command.trigger') + 'help', help.showHelp);
   commands.set(config.get('command.trigger') + 'summon', announcer.summon);
   commands.set(config.get('command.trigger') + 'banish', announcer.banish);
+  commands.set(config.get('command.trigger') + 'ld', memes.dead);
+  commands.set(config.get('command.trigger') + 'tucker', memes.crybaby);
+  commands.set(config.get('command.trigger') + 'tobi', memes.disastah);
+  commands.set(config.get('command.trigger') + 'zhou', memes.patience);
+  commands.set(config.get('command.trigger') + 'waow', memes.wow);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
