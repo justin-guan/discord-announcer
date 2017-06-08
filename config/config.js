@@ -73,6 +73,10 @@ if (!conf.get('voiceRSS.key')) {
   process.exit(1);
 }
 
+if (conf.get('storage.type') !== 'dropbox' || conf.get('storage.type') !== 'local') {
+  conf.set('storage.type', 'local');
+}
+
 if (conf.get('storage.type') === 'dropbox' && !conf.get('storage.dropbox.token')) {
   LOGGER.error('Storage type dropbox selected, but no dropbox token provided');
   process.exit(1);
