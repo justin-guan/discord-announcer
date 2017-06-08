@@ -2,10 +2,11 @@
 This is a node.js bot for discord that announces when a user enters or leaves a voice channel. This bot works using the Voice RSS API to generate announcements. As of v2.0.0, this bot has multi server support.
 
 * [Requirements](#requirements)
- * [Setting up Discord](#discord)
- * [Setting up VoiceRSS](#voiceRSS)
+  * [Setting up Discord](#discord)
+  * [Setting up VoiceRSS](#voiceRSS)
 * [Running the Bot](#running)
 * [Commands](#commands)
+* [Environment Variables](#env)
 
 <a name="requirements"></a>
 ## Requirements
@@ -38,6 +39,7 @@ Or in Windows:
 set VOICE_KEY=<VOICE_RSS_API_KEY>
 set DISCORD_TOKEN=<DISCORD_TOKEN>
 ```
+There are other environment variables that can be set. See the [environments variables section](#env) for more information on these variables.
 4. Type `npm start` to start the bot now
 
 <a name="commands"></a>
@@ -49,3 +51,13 @@ set DISCORD_TOKEN=<DISCORD_TOKEN>
 * `!tobi` - Plays "It's a disastah!"
 * `!zhou` - Plays "Patience from zhou"
 * `!waow` - Plays "WAOW!"
+
+<a name="env"></a>
+## Environment Variables
+* `VOICE_KEY`(Required) - The VoiceRSS API key
+* `DISCORD_TOKEN`(Required) - The Discord Bot token
+* `TRIGGER_PREFIX` - The prefix for a command (ie. The exclamation mark in the command `!help`)
+* `STORAGE_TYPE` - Where to store `connections.json`. This file is used to save which voice connections to (re)establish when the bot is started up. This value can only be `local` or `dropbox`. Invalid entries will default to `local`.
+* `DROPBOX_TOKEN` - The dropbox app token. This is only required if `STORAGE_TYPE` is set to `dropbox`
+* `DROPBOX_SAVE_LOCATION` - The dropbox location to save `connections.json`
+* `DROPBOX_BAK_LOCATION` - The dropbox backup save location for `connections.json`
