@@ -34,13 +34,47 @@ const conf = convict({
       default: "!",
       env: "TRIGGER_PREFIX"
     }
+  },
+  storage: {
+    type: {
+      doc: "The storage type. Either local or dropbox",
+      default: "local",
+      env: "STORAGE_TYPE"
+    },
+    dropbox: {
+      token: {
+        doc: "The dropbox access token. Required if storage type is dropbox",
+        default: "",
+        env: "DROPBOX_TOKEN"
+      },
+      saveLocation: {
+        doc: "The path to save connections.json",
+        default: "/connections.json",
+        env: "DROPBOX_SAVE_LOCATION"
+      },
+      backupLocation: {
+        doc: "The path to save connections.bak",
+        default: "/connections.bak",
+        env: "DROPBOX_BAK_LOCATION"
+      }
+    }
   }
 });
 
 conf.loadFile(__dirname + '/config.json');
 
-if (!conf.get('voiceRSS.key') || !conf.get('discord.token')) {
-  LOGGER.error('An API key is missing!');
+if (!conf.get('discord.token')) {
+  LOGGER.error('Discord Token missing!');
+  process.exit(1);
+}
+
+if (!conf.get('voiceRSS.key')) {
+  LOGGER.error('VoiceRSS API key missing!');
+  process.exit(1);
+}
+
+if (conf.get('storage.type') === 'dropbox' && !conf.get('storage.dropbox.token')) {
+  LOGGER.error('Storage type dropbox selected, but no dropbox token provided');
   process.exit(1);
 }
 
