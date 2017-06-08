@@ -40,6 +40,7 @@ set VOICE_KEY=<VOICE_RSS_API_KEY>
 set DISCORD_TOKEN=<DISCORD_TOKEN>
 ```
 There are other environment variables that can be set. See the [environments variables section](#env) for more information on these variables.
+
 4. Type `npm start` to start the bot now
 
 <a name="commands"></a>
