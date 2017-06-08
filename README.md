@@ -60,4 +60,4 @@ There are other environment variables that can be set. See the [environments var
 * `STORAGE_TYPE` - Where to store `connections.json`. This file is used to save which voice connections to (re)establish when the bot is started up. This value can only be `local` or `dropbox`. Invalid entries will default to `local`.
 * `DROPBOX_TOKEN` - The dropbox app token. This is only required if `STORAGE_TYPE` is set to `dropbox`
 * `DROPBOX_SAVE_LOCATION` - The dropbox location to save `connections.json`
-* `DROPBOX_BAK_LOCATION` - The dropbox backup save location for `connections.json`
+* `DROPBOX_BAK_LOCATION` - The dropbox backup save location for `connections.bak`
