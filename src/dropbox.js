@@ -33,10 +33,10 @@ async function deleteFromDropbox() {
     resp = await dbx.filesDelete({
       path: config.get('storage.dropbox.backupLocation')
     });
-    return Promise.resolve();
+    return Promise.resolve(true);
   } catch (err) {
     if (err.error.error_summary.startsWith('path_lookup/not_found/')) {
-      return Promise.resolve();
+      return Promise.resolve(false);
     }
     LOGGER.error(`Failed to delete previous version of connections.json from dropbox`);
     return Promise.reject(err);
@@ -61,8 +61,10 @@ async function createBackup() {
 
 function saveToDropbox(path) {
   deleteFromDropbox()
-  .then(() => {
-    createBackup();
+  .then(found => {
+    if (found) {
+      createBackup();
+    }
   })
   .then(() => {
     return uploadToDropbox(path);
