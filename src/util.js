@@ -5,7 +5,6 @@ const Promise = require('bluebird');
 const voicesynth = require(__dirname + '/voicesynth.js');
 const dropbox = require(__dirname + '/dropbox.js');
 const LOGGER = require(__dirname + '/logger.js');
-const config = require(__dirname + '/../config/config.js');
 
 async function sayJoin(member) {
   const name = member.nickname ? member.nickname : member.user.username;
@@ -39,10 +38,8 @@ function save(client) {
   }
   fs.writeFile(__dirname + '/connections.json', JSON.stringify(data), 'utf8')
     .then(() => {
-      if (config.get('storage.type') === 'dropbox') {
-        dropbox.saveToDropbox(__dirname + '/connections.json');
-      }
       LOGGER.info('Connections saved');
+      dropbox.saveToDropbox(__dirname + '/connections.json');
     })
     .catch(e => {
       LOGGER.error(`Failed to save connections\n${e}`);
@@ -78,22 +75,18 @@ function reconnect(client) {
   This mess seems to be due to a bug in the dropbox module not properly handling
   the .catch() and .finally() methods for Promises.
    */
-  if (config.get('storage.type') === 'local') {
-    return establishConnections(client);
-  } else {
-    return new Promise((resolve, reject) => {
-      dropbox.importFromDropbox()
-        .then(() => {
-          establishConnections(client)
-            .then(() => {
-              resolve();
-            })
-            .catch(() => {
-              reject();
-            });
-        });
-    });
-  }
+  return new Promise((resolve, reject) => {
+    dropbox.importFromDropbox()
+      .then(() => {
+        establishConnections(client)
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
+      });
+  });
 }
 
 
