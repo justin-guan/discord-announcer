@@ -24,6 +24,8 @@ const commands = new Map();
   commands.set(config.get('command.trigger') + 'tobi', memes.disastah);
   commands.set(config.get('command.trigger') + 'zhou', memes.patience);
   commands.set(config.get('command.trigger') + 'waow', memes.wow);
+  commands.set(config.get('command.trigger') + 'theplay', memes.theplay);
+  commands.set(config.get('command.trigger') + 'noone', memes.noone);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);

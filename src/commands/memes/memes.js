@@ -49,9 +49,23 @@ function wow(info) {
   }
 }
 
+function theplay(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/theplay.wav');
+  }
+}
+
+function noone(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/noone.wav');
+  }
+}
+
 
 exports.dead = dead;
 exports.crybaby = crybaby;
 exports.disastah = disastah;
 exports.patience = patience;
 exports.wow = wow;
+exports.theplay = theplay;
+exports.noone = noone;
