@@ -51,13 +51,13 @@ function wow(info) {
 
 function theplay(info) {
   if (errorCheck(info)) {
-    playFile(info, __dirname + '/../../../memes/theplay.wav');
+    playFile(info, __dirname + '/../../../memes/theplay.mp3');
   }
 }
 
 function noone(info) {
   if (errorCheck(info)) {
-    playFile(info, __dirname + '/../../../memes/noone.wav');
+    playFile(info, __dirname + '/../../../memes/noone.mp3');
   }
 }
 
