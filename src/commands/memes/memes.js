@@ -67,6 +67,7 @@ function price(info) {
   }
 }
 
+
 exports.dead = dead;
 exports.crybaby = crybaby;
 exports.disastah = disastah;
