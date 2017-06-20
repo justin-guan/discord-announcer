@@ -66,6 +66,7 @@ function price(info) {
     playFile(info, __dirname + '/../../../memes/price.wav');
   }
 }
+
 exports.dead = dead;
 exports.crybaby = crybaby;
 exports.disastah = disastah;
