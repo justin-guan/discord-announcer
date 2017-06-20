@@ -53,7 +53,7 @@ There are other environment variables that can be set. See the [environments var
 * `!zhou` - Plays "Patience from zhou"
 * `!waow` - Plays "WAOW!"
 * `!theplay` - Plays beginning of The Play
-* `!noone` - Plays noone.mp3
+* `!noone` - Plays noone.wav
 
 <a name="env"></a>
 ## Environment Variables
