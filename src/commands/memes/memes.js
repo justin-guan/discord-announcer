@@ -61,6 +61,12 @@ function noone(info) {
   }
 }
 
+function price(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/price.wav');
+  }
+}
+
 
 exports.dead = dead;
 exports.crybaby = crybaby;
@@ -69,3 +75,4 @@ exports.patience = patience;
 exports.wow = wow;
 exports.theplay = theplay;
 exports.noone = noone;
+exports.price=price;
