@@ -51,19 +51,19 @@ function wow(info) {
 
 function theplay(info) {
   if (errorCheck(info)) {
-    playFile(info, __dirname + '/../../../memes/theplay.wav');
+    playFile(info, __dirname + '/../../../memes/theplay.mp3');
   }
 }
 
 function noone(info) {
   if (errorCheck(info)) {
-    playFile(info, __dirname + '/../../../memes/noone.wav');
+    playFile(info, __dirname + '/../../../memes/noone.mp3');
   }
 }
 
-function price(info) {
+function duel(info) {
   if (errorCheck(info)) {
-    playFile(info, __dirname + '/../../../memes/price.wav');
+    playFile(info, __dirname + '/../../../memes/duel.mp3');
   }
 }
 
@@ -75,4 +75,4 @@ exports.patience = patience;
 exports.wow = wow;
 exports.theplay = theplay;
 exports.noone = noone;
-exports.price=price;
+exports.duel = duel;

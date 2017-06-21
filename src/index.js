@@ -27,6 +27,7 @@ const commands = new Map();
   commands.set(config.get('command.trigger') + 'theplay', memes.theplay);
   commands.set(config.get('command.trigger') + 'noone', memes.noone);
   commands.set(config.get('command.trigger') + 'price', memes.price);
+  commands.set(config.get('command.trigger') + 'duel', memes.duel);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
