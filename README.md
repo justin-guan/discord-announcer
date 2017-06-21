@@ -56,6 +56,9 @@ There are other environment variables that can be set. See the [environments var
 * `!noone` - Plays noone.wav
 * `!price` - Plays the beginning of the Price is Right theme song
 * `!duel` - Plays "It's time to duel"
+* `!free` - Plays "Free game so no bitching"
+* `!cyka` - Plays cyka.wav
+* `!wtf` - Plays wtf.wav
 
 <a name="env"></a>
 ## Environment Variables
