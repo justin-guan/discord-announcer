@@ -66,9 +66,28 @@ function price(info) {
     playFile(info, __dirname + '/../../../memes/price.wav');
   }
 }
+
 function duel(info) {
   if (errorCheck(info)) {
     playFile(info, __dirname + '/../../../memes/duel.wav');
+  }
+}
+
+function free(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/free.wav');
+  }
+}
+
+function cyka(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/cyka.wav');
+  }
+}
+
+function wtf(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/wtf.wav');
   }
 }
 
@@ -82,3 +101,6 @@ exports.theplay = theplay;
 exports.noone = noone;
 exports.price = price;
 exports.duel = duel;
+exports.free = free;
+exports.cyka = cyka;
+exports.wtf = wtf;
