@@ -91,6 +91,12 @@ function wtf(info) {
   }
 }
 
+function godlike(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/godlike.wav');
+  }
+}
+
 
 exports.dead = dead;
 exports.crybaby = crybaby;
@@ -104,3 +110,4 @@ exports.duel = duel;
 exports.free = free;
 exports.cyka = cyka;
 exports.wtf = wtf;
+exports.godlike=godlile;
