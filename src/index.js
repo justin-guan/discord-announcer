@@ -31,6 +31,7 @@ const commands = new Map();
   commands.set(config.get('command.trigger') + 'free', memes.free);
   commands.set(config.get('command.trigger') + 'cyka', memes.cyka);
   commands.set(config.get('command.trigger') + 'wtf', memes.wtf);
+  commands.set(config.get('command.trigger') + 'godlike', memes.godlike);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
