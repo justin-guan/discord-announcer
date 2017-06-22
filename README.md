@@ -51,14 +51,15 @@ There are other environment variables that can be set. See the [environments var
 * `!tucker` - Plays crybaby
 * `!tobi` - Plays "It's a disastah!"
 * `!zhou` - Plays "Patience from zhou"
-* `!waow` - Plays "WAOW!"
-* `!theplay` - Plays beginning of The Play
-* `!noone` - Plays noone.wav
+* `!waow` - Plays LD's signature "WAOW!"
+* `!theplay` - Plays the beginning of The Play
+* `!noone` - Plays "No one has ever done that, no one has ever done that in the history of Dota!"
 * `!price` - Plays the beginning of the Price is Right theme song
-* `!duel` - Plays "It's time to duel"
+* `!duel` - Plays "It's time to d-d-d-d-d-d-d-duel!"
 * `!free` - Plays "Free game so no bitching"
-* `!cyka` - Plays cyka.wav
-* `!wtf` - Plays wtf.wav
+* `!cyka` - Plays the song of Hong's people
+* `!wtf` - Plays a soundclip of Shuai having an aneurysm.
+* `!godlike` - Plays the Godlike! killstreak. 
 
 <a name="env"></a>
 ## Environment Variables
