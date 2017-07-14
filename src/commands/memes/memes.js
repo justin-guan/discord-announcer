@@ -97,6 +97,12 @@ function maple(info) {
   }
 }
 
+function shut(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/shut.wav');
+  }
+}
+
 
 exports.dead = dead;
 exports.crybaby = crybaby;
@@ -111,3 +117,4 @@ exports.free = free;
 exports.cyka = cyka;
 exports.wtf = wtf;
 exports.maple = maple;
+exports.shut = shut;
