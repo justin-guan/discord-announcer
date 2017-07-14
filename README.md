@@ -59,6 +59,7 @@ There are other environment variables that can be set. See the [environments var
 * `!free` - Plays "Free game so no bitching"
 * `!cyka` - Plays cyka.wav
 * `!wtf` - Plays wtf.wav
+* `!shut` - Plays shut.wav
 
 <a name="env"></a>
 ## Environment Variables
