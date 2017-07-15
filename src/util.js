@@ -54,6 +54,7 @@ function shutdown(client) {
  */
 function save(client) {
   let data = {};
+  // eslint-disable-next-line
   for (let [k, vc] of client.voiceConnections) {
     data[vc.channel.id] = true;
   }
@@ -76,6 +77,7 @@ function save(client) {
  */
 function establishConnections(client) {
   let promises = [];
+  // eslint-disable-next-line
   for (let id in JSON.parse(fs.readFileSync(__dirname + '/connections.json'))) {
     let def = Promise.defer();
     promises.push(def.promise);
