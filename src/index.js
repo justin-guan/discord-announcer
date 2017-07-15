@@ -3,12 +3,11 @@ process.title = 'Discord Announcer';
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const Promise = require('bluebird');
 const LOGGER = require(__dirname + '/logger.js');
 const config = require(__dirname + '/../config/config.js');
 const util = require(__dirname + '/util.js');
 
-//Commands
+// Commands
 const help = require(__dirname + '/commands/help/help.js');
 const announcer = require(__dirname + '/commands/announce/announce.js');
 const memes = require(__dirname + '/commands/memes/memes.js');
@@ -38,9 +37,15 @@ const commands = new Map();
     .catch(LOGGER.error);
 })();
 
-process.on('SIGTERM', () => {util.shutdown(client);});
-process.on('SIGINT', () => {util.shutdown(client);});
-process.on('SIGQUIT', () => {util.shutdown(client);});
+process.on('SIGTERM', () => {
+  util.shutdown(client);
+});
+process.on('SIGINT', () => {
+  util.shutdown(client);
+});
+process.on('SIGQUIT', () => {
+  util.shutdown(client);
+});
 
 client.on('ready', () => {
   client.user.setGame('with Node.js');
@@ -61,8 +66,8 @@ client.on('message', async (message) => {
   const msg = await message.delete();
   try {
     commands.get(msg.content)({
-      "client": client,
-      "message": msg
+      'client': client,
+      'message': msg
     });
   } catch (e) {
     LOGGER.info(`Failed to execute command ${msg.content}`);
@@ -74,11 +79,15 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
     oldMember.voiceChannelID === newMember.voiceChannelID) {
     return;
   }
-  if (newMember.voiceChannel && client.voiceConnections.exists('channel', newMember.voiceChannel)) {
-    LOGGER.info(`${newMember.id} joined voice channel ${newMember.voiceChannelID}`);
+  if (newMember.voiceChannel && client.voiceConnections.exists(
+      'channel', newMember.voiceChannel)) {
+    LOGGER.info(
+      `${newMember.id} joined voice channel ${newMember.voiceChannelID}`);
     util.sayJoin(newMember);
-  } else if (oldMember.voiceChannel && client.voiceConnections.exists('channel', oldMember.voiceChannel)) {
-    LOGGER.info(`${oldMember.id} left voice channel ${oldMember.voiceChannelID}`);
+  } else if (oldMember.voiceChannel && client.voiceConnections.exists(
+      'channel', oldMember.voiceChannel)) {
+    LOGGER.info(
+      `${oldMember.id} left voice channel ${oldMember.voiceChannelID}`);
     util.sayLeave(oldMember);
   }
 });

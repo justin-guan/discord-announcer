@@ -5,57 +5,57 @@ const LOGGER = require(__dirname + '/../src/logger.js');
 
 const conf = convict({
   env: {
-    doc: "The applicaton environment.",
-    format: ["production", "development", "test"],
-    default: "development",
-    env: "NODE_ENV"
+    doc: 'The applicaton environment.',
+    format: ['production', 'development', 'test'],
+    default: 'development',
+    env: 'NODE_ENV'
   },
   voiceRSS: {
     key: {
-      doc: "The VoiceRSS API key",
-      default: "",
-      env: "VOICE_KEY"
+      doc: 'The VoiceRSS API key',
+      default: '',
+      env: 'VOICE_KEY'
     },
     url: {
-      doc: "The VoiceRSS API url",
-      default: "" // Provided by config.json
+      doc: 'The VoiceRSS API url',
+      default: '' // Provided by config.json
     }
   },
   discord: {
     token: {
-      doc: "The Discord Bot Token",
-      default: "",
-      env: "DISCORD_TOKEN"
+      doc: 'The Discord Bot Token',
+      default: '',
+      env: 'DISCORD_TOKEN'
     }
   },
   command: {
     trigger: {
-      doc: "The trigger prefix for a command",
-      default: "!",
-      env: "TRIGGER_PREFIX"
+      doc: 'The trigger prefix for a command',
+      default: '!',
+      env: 'TRIGGER_PREFIX'
     }
   },
   storage: {
     type: {
-      doc: "The storage type. Either local or dropbox",
-      default: "local",
-      env: "STORAGE_TYPE"
+      doc: 'The storage type. Either local or dropbox',
+      default: 'local',
+      env: 'STORAGE_TYPE'
     },
     dropbox: {
       token: {
-        doc: "The dropbox access token. Required if storage type is dropbox",
-        default: "",
-        env: "DROPBOX_TOKEN"
+        doc: 'The dropbox access token. Required if storage type is dropbox',
+        default: '',
+        env: 'DROPBOX_TOKEN'
       },
       saveLocation: {
-        doc: "The path to save connections.json",
-        default: "/connections.json",
-        env: "DROPBOX_SAVE_LOCATION"
+        doc: 'The path to save connections.json',
+        default: '/connections.json',
+        env: 'DROPBOX_SAVE_LOCATION'
       },
       backupLocation: {
-        doc: "The path to save connections.bak",
-        default: "/connections.bak",
-        env: "DROPBOX_BAK_LOCATION"
+        doc: 'The path to save connections.bak',
+        default: '/connections.bak',
+        env: 'DROPBOX_BAK_LOCATION'
       }
     }
   }

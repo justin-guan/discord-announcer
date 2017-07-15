@@ -9,7 +9,7 @@ const logger = new winston.Logger({
       filename: __dirname + '/../logs/logs.log',
       handleExceptions: true,
       json: false,
-      maxsize: 5242880, //5MB
+      maxsize: 5242880, // 5MB
       maxFiles: 5,
       colorize: false
     }),

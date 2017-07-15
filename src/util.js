@@ -6,6 +6,11 @@ const voicesynth = require(__dirname + '/voicesynth.js');
 const dropbox = require(__dirname + '/dropbox.js');
 const LOGGER = require(__dirname + '/logger.js');
 
+/**
+ * sayJoin - Causes the bot to announce a member has joined the voice channel
+ *
+ * @param  {Member} member Discord.js Member object
+ */
 async function sayJoin(member) {
   const name = member.nickname ? member.nickname : member.user.username;
   const connection = member.voiceChannel.connection;
@@ -15,6 +20,11 @@ async function sayJoin(member) {
   connection.playFile(path);
 }
 
+/**
+ * sayLeave - Causes the bot to announce a member has left the voice channel
+ *
+ * @param  {Member} member Discord.js Member object
+ */
 async function sayLeave(member) {
   const name = member.nickname ? member.nickname : member.user.username;
   const connection = member.voiceChannel.connection;
@@ -24,6 +34,11 @@ async function sayLeave(member) {
   connection.playFile(path);
 }
 
+/**
+ * shutdown - Safely shutdown bot
+ *
+ * @param  {Client} client Discord.js Client object
+ */
 function shutdown(client) {
   LOGGER.warn('Termination signal detected! Exiting...');
   client.destroy()
@@ -31,6 +46,12 @@ function shutdown(client) {
     .catch(process.exit(1));
 }
 
+/**
+ * save - Saves the bot's currently joined voice channels. This is done in case
+ * the bot is restarted or crashes.
+ *
+ * @param  {Client} client Discord.js Client object
+ */
 function save(client) {
   let data = {};
   for (let [k, vc] of client.voiceConnections) {
@@ -41,11 +62,18 @@ function save(client) {
       LOGGER.info('Connections saved');
       dropbox.saveToDropbox(__dirname + '/connections.json');
     })
-    .catch(e => {
+    .catch((e) => {
       LOGGER.error(`Failed to save connections\n${e}`);
     });
 }
 
+/**
+ * establishConnections - Connect to all voice channels in connections.json
+ *
+ * @param  {Client} client Discord.js Client object
+ * @return {Promise}        Resolve on all connections successfully established,
+ * reject otherwise.
+ */
 function establishConnections(client) {
   let promises = [];
   for (let id in JSON.parse(fs.readFileSync(__dirname + '/connections.json'))) {
@@ -62,7 +90,7 @@ function establishConnections(client) {
       LOGGER.info(`Successfully joined voice channel ${id}!`);
       def.resolve();
     })
-    .catch(err => {
+    .catch((err) => {
       LOGGER.warn(`Failed to join voice channel ${id}`);
       def.reject();
     });
@@ -70,6 +98,14 @@ function establishConnections(client) {
   return Promise.all(promises);
 }
 
+/**
+ * reconnect - Download connections.json from dropbox and then establish
+ * connections to all saved connections.
+ *
+ * @param  {Client} client Discord.js Client object
+ * @return {Promise}        Resolve on successful download and connection
+ * establishment, reject otherwise.
+ */
 function reconnect(client) {
   /*
   This mess seems to be due to a bug in the dropbox module not properly handling
