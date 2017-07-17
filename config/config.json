@@ -9,12 +9,7 @@
   "command": {
     "trigger": "!"
   },
-  "storage": {
-    "type": "local",
-    "dropbox": {
-      "token": "",
-      "saveLocation": "/connections.json",
-      "backupLocation": "/connections.bak"
-    }
+  "mongodb": {
+    "url": ""
   }
 }
