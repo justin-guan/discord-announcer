@@ -4,12 +4,6 @@ const convict = require('convict');
 const LOGGER = require(__dirname + '/../src/logger.js');
 
 const conf = convict({
-  env: {
-    doc: 'The applicaton environment.',
-    format: ['production', 'development', 'test'],
-    default: 'development',
-    env: 'NODE_ENV'
-  },
   voiceRSS: {
     key: {
       doc: 'The VoiceRSS API key',
@@ -35,28 +29,11 @@ const conf = convict({
       env: 'TRIGGER_PREFIX'
     }
   },
-  storage: {
-    type: {
-      doc: 'The storage type. Either local or dropbox',
-      default: 'local',
-      env: 'STORAGE_TYPE'
-    },
-    dropbox: {
-      token: {
-        doc: 'The dropbox access token. Required if storage type is dropbox',
-        default: '',
-        env: 'DROPBOX_TOKEN'
-      },
-      saveLocation: {
-        doc: 'The path to save connections.json',
-        default: '/connections.json',
-        env: 'DROPBOX_SAVE_LOCATION'
-      },
-      backupLocation: {
-        doc: 'The path to save connections.bak',
-        default: '/connections.bak',
-        env: 'DROPBOX_BAK_LOCATION'
-      }
+  mongodb: {
+    url: {
+      doc: 'The MongoDB url to connect to',
+      default: '',
+      env: 'MONGODB_URL'
     }
   }
 });
@@ -73,16 +50,13 @@ if (!conf.get('voiceRSS.key')) {
   process.exit(1);
 }
 
-if (conf.get('storage.type') !== 'dropbox' || conf.get('storage.type') !== 'local') {
-  conf.set('storage.type', 'local');
-}
-
-if (conf.get('storage.type') === 'dropbox' && !conf.get('storage.dropbox.token')) {
-  LOGGER.error('Storage type dropbox selected, but no dropbox token provided');
+if (!conf.get('mongodb.url')) {
+  LOGGER.error('MongoDB url not provided!');
   process.exit(1);
 }
 
-let url = conf.get('voiceRSS.url').replace('[VOICE_KEY]', conf.get('voiceRSS.key'))
+let url = conf.get('voiceRSS.url')
+              .replace('[VOICE_KEY]', conf.get('voiceRSS.key'));
 conf.set('voiceRSS.url', url);
 
 conf.validate();
