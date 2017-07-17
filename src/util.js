@@ -1,9 +1,9 @@
 'use strict';
 
-const fs = require('fs-extra');
 const Promise = require('bluebird');
+const MongoClient = require('mongodb').MongoClient;
+const _ = require('lodash');
 const voicesynth = require(__dirname + '/voicesynth.js');
-const dropbox = require(__dirname + '/dropbox.js');
 const LOGGER = require(__dirname + '/logger.js');
 
 /**
@@ -52,30 +52,57 @@ function shutdown(client) {
  *
  * @param  {Client} client Discord.js Client object
  */
-function save(client) {
-  let data = {};
-  // eslint-disable-next-line
-  for (let [k, vc] of client.voiceConnections) {
-    data[vc.channel.id] = true;
+async function save(client) {
+  let db;
+  try {
+    db = await MongoClient.connect(config.get('mongodb.url'));
+    let setting = {
+      'Setting': 'connections'
+    };
+    let result = await db.collection('global_config').findOne(setting);
+    result.connections = _.values(client.voiceConnections);
+    await db.collection('global_config').updateOne(setting, result);
+  } catch (err) {
+    LOGGER.error(`Failed to save connections\n${err}`);
+  } finally {
+    if (db) {
+      db.close();
+    }
   }
-  fs.writeFile(__dirname + '/connections.json', JSON.stringify(data), 'utf8')
-    .then(() => {
-      LOGGER.info('Connections saved');
-      dropbox.saveToDropbox(__dirname + '/connections.json');
-    })
-    .catch((e) => {
-      LOGGER.error(`Failed to save connections\n${e}`);
-    });
 }
 
 /**
- * establishConnections - Connect to all voice channels in connections.json
+ * reconnect - Connect to all voice channels in connections.json
  *
  * @param  {Client} client Discord.js Client object
  * @return {Promise}        Resolve on all connections successfully established,
  * reject otherwise.
  */
-function establishConnections(client) {
+async function reconnect(client) {
+  let db;
+  try {
+    db = await MongoClient.connect(config.get('mongodb.url'));
+    let setting = {
+      'Setting': 'connections'
+    };
+    let result = await db.collection('global_config').findOne(setting);
+    for (let server of result.connections) {
+      if (client.channels.get(server) === undefined) {
+        LOGGER.warn(`${server} is not a joinable channel`);
+        continue;
+      }
+      await client.channels.get(server).join();
+      LOGGER.info(`Successfully joined ${server}`);
+    }
+    return Promise.resolve();
+  } catch (err) {
+    LOGGER.error(err);
+  } finally {
+    if (db) {
+      db.close();
+    }
+  }
+  /*
   let promises = [];
   // eslint-disable-next-line
   for (let id in JSON.parse(fs.readFileSync(__dirname + '/connections.json'))) {
@@ -98,33 +125,7 @@ function establishConnections(client) {
     });
   }
   return Promise.all(promises);
-}
-
-/**
- * reconnect - Download connections.json from dropbox and then establish
- * connections to all saved connections.
- *
- * @param  {Client} client Discord.js Client object
- * @return {Promise}        Resolve on successful download and connection
- * establishment, reject otherwise.
- */
-function reconnect(client) {
-  /*
-  This mess seems to be due to a bug in the dropbox module not properly handling
-  the .catch() and .finally() methods for Promises.
-   */
-  return new Promise((resolve, reject) => {
-    dropbox.importFromDropbox()
-      .then(() => {
-        establishConnections(client)
-          .then(() => {
-            resolve();
-          })
-          .catch(() => {
-            reject();
-          });
-      });
-  });
+  */
 }
 
 
