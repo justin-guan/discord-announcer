@@ -4,20 +4,21 @@ process.title = 'Discord Announcer';
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const LOGGER = require(__dirname + '/lib/logger.js');
+const announcer = require(__dirname + '/lib/announcer.js');
 const config = require(__dirname + '/../config/config.js');
 const util = require(__dirname + '/lib/util.js');
 
 // Commands
 const help = require(__dirname + '/commands/help/help.js');
-const announcer = require(__dirname + '/commands/announce/announce.js');
+const announce = require(__dirname + '/commands/announce/announce.js');
 const memes = require(__dirname + '/commands/memes/memes.js');
 
 const commands = new Map();
 
 (function init() {
   commands.set(config.get('command.trigger') + 'help', help.showHelp);
-  commands.set(config.get('command.trigger') + 'summon', announcer.summon);
-  commands.set(config.get('command.trigger') + 'banish', announcer.banish);
+  commands.set(config.get('command.trigger') + 'summon', announce.summon);
+  commands.set(config.get('command.trigger') + 'banish', announce.banish);
   commands.set(config.get('command.trigger') + 'ld', memes.dead);
   commands.set(config.get('command.trigger') + 'tucker', memes.crybaby);
   commands.set(config.get('command.trigger') + 'tobi', memes.disastah);
@@ -83,11 +84,11 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
       'channel', newMember.voiceChannel)) {
     LOGGER.info(
       `${newMember.id} joined voice channel ${newMember.voiceChannelID}`);
-    util.sayJoin(newMember);
+    announcer.sayJoin(newMember);
   } else if (oldMember.voiceChannel && client.voiceConnections.exists(
       'channel', oldMember.voiceChannel)) {
     LOGGER.info(
       `${oldMember.id} left voice channel ${oldMember.voiceChannelID}`);
-    util.sayLeave(oldMember);
+    announcer.sayLeave(oldMember);
   }
 });

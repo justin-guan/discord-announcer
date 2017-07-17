@@ -17,6 +17,7 @@ function summon(info) {
   }
   info.message.member.voiceChannel.join()
     .then((connection) => {
+      LOGGER.info(`Joined voice channel ${connection.channel.id}`);
       util.save(info.client);
     })
     .catch(() => {
@@ -35,6 +36,7 @@ function banish(info) {
   if (info.message.member.voiceChannel && info.client.voiceConnections.exists(
       'channel', info.message.member.voiceChannel)) {
     info.message.member.voiceChannel.leave();
+    LOGGER.info(`Left voice channel ${info.message.member.voiceChannel.id}`);
     util.save(info.client);
     return;
   }
