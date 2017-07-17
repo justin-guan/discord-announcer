@@ -31,7 +31,6 @@
     "ffmpeg-binaries": "^3.2.2-3",
     "fs-extra": "^3.0.1",
     "libsodium-wrappers": "^0.5.1",
-    "lodash": "^4.17.4",
     "mongodb": "^2.2.30",
     "node-opus": "^0.2.6",
     "opusscript": "0.0.3",
