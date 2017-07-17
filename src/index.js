@@ -53,7 +53,7 @@ client.on('ready', () => {
     .catch(() => {
       LOGGER.warn('Failed to rejoin some channels...');
     })
-    .finally(() => {
+    .then(() => {
       util.save(client);
       LOGGER.info('Client ready');
     });
