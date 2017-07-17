@@ -2,7 +2,7 @@
 
 const MongoClient = require('mongodb').MongoClient;
 const LOGGER = require(__dirname + '/../logger.js');
-const config = require(__dirname + '/../config/config.js');
+const config = require(__dirname + '/../../config/config.js');
 
 
 /**
