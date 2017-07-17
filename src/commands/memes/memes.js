@@ -1,6 +1,6 @@
 'use strict';
 
-const LOGGER = require(__dirname + '/../../lib/logger.js');
+const LOGGER = require(__dirname + '/../../libs/logger.js');
 
 /**
  * playFile - Plays a music file to the user who invoked the command's voice
