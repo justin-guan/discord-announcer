@@ -14,10 +14,14 @@ const LOGGER = require(__dirname + '/logger.js');
 async function sayJoin(member) {
   const name = member.nickname ? member.nickname : member.user.username;
   const connection = member.voiceChannel.connection;
-  const path = await voicesynth.synth(
-    `${name} joined the channel`,
-    __dirname + `/../voice/join/${name}.mp3`);
-  connection.playFile(path);
+  try {
+    const path = await voicesynth.synth(
+      `${name} joined the channel`,
+      __dirname + `/../voice/join/${name}.mp3`);
+    connection.playFile(path);
+  } catch (err) {
+    LOGGER.error(`Failed to synthesize join voice file for ${name}`);
+  }
 }
 
 /**
@@ -28,10 +32,15 @@ async function sayJoin(member) {
 async function sayLeave(member) {
   const name = member.nickname ? member.nickname : member.user.username;
   const connection = member.voiceChannel.connection;
-  const path = await voicesynth.synth(
-    `${name} left the channel`,
-    __dirname + `/../voice/leave/${name}.mp3`);
-  connection.playFile(path);
+  try {
+      const path = await voicesynth.synth(
+      `${name} left the channel`,
+      __dirname + `/../voice/leave/${name}.mp3`);
+    connection.playFile(path);
+  }
+  catch (err) {
+    LOGGER.error(`Failed to synthesize leave voice file for ${name}`);
+  }
 }
 
 /**

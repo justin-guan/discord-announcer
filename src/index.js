@@ -63,14 +63,14 @@ client.on('message', async (message) => {
   if (message.author.bot || !commands.get(message.content)) {
     return;
   }
-  const msg = await message.delete();
   try {
+    const msg = await message.delete();
     commands.get(msg.content)({
       'client': client,
       'message': msg
     });
   } catch (e) {
-    LOGGER.info(`Failed to execute command ${msg.content}`);
+    LOGGER.info(`Failed to execute command ${message.content}`);
   }
 });
 

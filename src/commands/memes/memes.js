@@ -11,8 +11,8 @@ const LOGGER = require(__dirname + '/../../logger.js');
  * @param  {String} path Path to the audio file that will be played.
  */
 async function playFile(info, path) {
-  const connection = await info.message.member.voiceChannel.join();
   try {
+    const connection = await info.message.member.voiceChannel.join();
     connection.playFile(path);
   } catch (e) {
     LOGGER.error(e);
