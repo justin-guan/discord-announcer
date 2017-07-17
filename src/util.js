@@ -2,8 +2,8 @@
 
 const Promise = require('bluebird');
 const MongoClient = require('mongodb').MongoClient;
-const _ = require('lodash');
 const voicesynth = require(__dirname + '/voicesynth.js');
+const config = require(__dirname + '/../config/config.js');
 const LOGGER = require(__dirname + '/logger.js');
 
 /**
@@ -60,8 +60,12 @@ async function save(client) {
       'Setting': 'connections'
     };
     let result = await db.collection('global_config').findOne(setting);
-    result.connections = _.values(client.voiceConnections);
+    result.connections = [];
+    for (let vc of client.voiceConnections) {
+      result.connections.push(vc[1].channel.id);
+    }
     await db.collection('global_config').updateOne(setting, result);
+    LOGGER.info('Connections saved!');
   } catch (err) {
     LOGGER.error(`Failed to save connections\n${err}`);
   } finally {
@@ -86,46 +90,34 @@ async function reconnect(client) {
       'Setting': 'connections'
     };
     let result = await db.collection('global_config').findOne(setting);
+    let promises = [];
     for (let server of result.connections) {
+      let def = Promise.defer();
+      promises.push(def.promise);
       if (client.channels.get(server) === undefined) {
         LOGGER.warn(`${server} is not a joinable channel`);
+        def.reject();
         continue;
       }
-      await client.channels.get(server).join();
-      LOGGER.info(`Successfully joined ${server}`);
+      client.channels.get(server).join()
+      .then(() => {
+        LOGGER.info(`Successfully joined ${server}`);
+        def.resolve();
+      })
+      .catch(() => {
+        LOGGER.warn(`Failed to join ${server}`);
+        def.reject();
+      });
     }
-    return Promise.resolve();
+    return Promise.all(promises);
   } catch (err) {
     LOGGER.error(err);
+    return Promise.reject();
   } finally {
     if (db) {
       db.close();
     }
   }
-  /*
-  let promises = [];
-  // eslint-disable-next-line
-  for (let id in JSON.parse(fs.readFileSync(__dirname + '/connections.json'))) {
-    let def = Promise.defer();
-    promises.push(def.promise);
-    LOGGER.info(`Trying to reconnect to voice channel ${id}...`);
-    if (client.channels.get(id) === undefined) {
-      LOGGER.warn(`${id} is not a channel`);
-      def.reject();
-      continue;
-    }
-    client.channels.get(id).join()
-    .then(() => {
-      LOGGER.info(`Successfully joined voice channel ${id}!`);
-      def.resolve();
-    })
-    .catch((err) => {
-      LOGGER.warn(`Failed to join voice channel ${id}`);
-      def.reject();
-    });
-  }
-  return Promise.all(promises);
-  */
 }
 
 
