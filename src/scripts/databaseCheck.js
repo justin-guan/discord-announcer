@@ -11,8 +11,9 @@ const config = require(__dirname + '/../../config/config.js');
 async function _createCollection() {
   try {
     let db = await MongoClient.connect(config.get('mongodb.url'));
-    await db.createCollection('global_config');
-    db.close();
+    db.createCollection('global_config').then(() => {
+      db.close();
+    });
   } catch (err) {
     LOGGER.error('Failed to create global_config collection!');
     process.exit(1);
