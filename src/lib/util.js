@@ -3,8 +3,8 @@
 const Promise = require('bluebird');
 const MongoClient = require('mongodb').MongoClient;
 const voicesynth = require(__dirname + '/voicesynth.js');
-const config = require(__dirname + '/../config/config.js');
-const LOGGER = require(__dirname + '/logger/logger.js');
+const config = require(__dirname + '/../../config/config.js');
+const LOGGER = require(__dirname + '/logger.js');
 
 /**
  * sayJoin - Causes the bot to announce a member has joined the voice channel
@@ -17,7 +17,7 @@ async function sayJoin(member) {
   try {
     const path = await voicesynth.synth(
       `${name} joined the channel`,
-      __dirname + `/../voice/join/${name}.mp3`);
+      __dirname + `/../../voice/join/${name}.mp3`);
     connection.playFile(path);
   } catch (err) {
     LOGGER.error(`Failed to synthesize join voice file for ${name}`);
@@ -35,10 +35,9 @@ async function sayLeave(member) {
   try {
       const path = await voicesynth.synth(
       `${name} left the channel`,
-      __dirname + `/../voice/leave/${name}.mp3`);
+      __dirname + `/../../voice/leave/${name}.mp3`);
     connection.playFile(path);
-  }
-  catch (err) {
+  } catch (err) {
     LOGGER.error(`Failed to synthesize leave voice file for ${name}`);
   }
 }

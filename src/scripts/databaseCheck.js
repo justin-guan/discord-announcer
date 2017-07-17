@@ -1,7 +1,7 @@
 'use strict';
 
 const MongoClient = require('mongodb').MongoClient;
-const LOGGER = require(__dirname + '/../logger/logger.js');
+const LOGGER = require(__dirname + '/../lib/logger.js');
 const config = require(__dirname + '/../../config/config.js');
 
 

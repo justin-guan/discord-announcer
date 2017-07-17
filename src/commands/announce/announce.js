@@ -1,7 +1,7 @@
 'use strict';
 
-const LOGGER = require(__dirname + '/../../logger/logger.js');
-const util = require(__dirname + '/../../util.js');
+const LOGGER = require(__dirname + '/../../lib/logger.js');
+const util = require(__dirname + '/../../lib/util.js');
 
 /**
  * summon - Summons the bot to user's voice channel. Replies with an error if

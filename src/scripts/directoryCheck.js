@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs-extra');
-const LOGGER = require(__dirname + '/../logger/logger.js');
+const LOGGER = require(__dirname + '/../lib/logger.js');
 
 /**
  * initializeDirectory - Create a directory at path

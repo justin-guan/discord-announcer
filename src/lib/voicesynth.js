@@ -3,8 +3,8 @@
 const request = require('request');
 const fs = require('fs');
 const Promise = require('bluebird');
-const LOGGER = require(__dirname + '/logger/logger.js');
-const config = require(__dirname + '/../config/config.js');
+const LOGGER = require(__dirname + '/logger.js');
+const config = require(__dirname + '/../../config/config.js');
 
 /**
  * const synth - Synthesize an audio file from the given text

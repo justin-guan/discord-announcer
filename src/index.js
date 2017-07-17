@@ -3,9 +3,9 @@ process.title = 'Discord Announcer';
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const LOGGER = require(__dirname + '/logger/logger.js');
+const LOGGER = require(__dirname + '/lib/logger.js');
 const config = require(__dirname + '/../config/config.js');
-const util = require(__dirname + '/util.js');
+const util = require(__dirname + '/lib/util.js');
 
 // Commands
 const help = require(__dirname + '/commands/help/help.js');
