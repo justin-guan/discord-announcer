@@ -65,8 +65,5 @@ There are other environment variables that can be set. See the [environments var
 ## Environment Variables
 * `VOICE_KEY`(Required) - The VoiceRSS API key
 * `DISCORD_TOKEN`(Required) - The Discord Bot token
-* `TRIGGER_PREFIX`(optional) - The prefix for a command (ie. The exclamation mark in the command `!help`)
-* `STORAGE_TYPE`(optional) - Where to store `connections.json`. This file is used to save which voice connections to (re)establish when the bot is started up. This value can only be `local` or `dropbox`. Invalid entries will default to `local`.
-* `DROPBOX_TOKEN`(optional) - The dropbox app token. This is REQUIRED if `STORAGE_TYPE` is set to `dropbox`
-* `DROPBOX_SAVE_LOCATION`(optional) - The dropbox location to save `connections.json`
-* `DROPBOX_BAK_LOCATION`(optional) - The dropbox backup save location for `connections.bak`
+* `TRIGGER_PREFIX`(Optional) - The prefix for a command (ie. The exclamation mark in the command `!help`)
+* `MONGODB_URL` (Required) - The url to a MongoDB database
