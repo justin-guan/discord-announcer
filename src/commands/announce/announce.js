@@ -1,6 +1,6 @@
 'use strict';
 
-const LOGGER = require(__dirname + '/../../logger.js');
+const LOGGER = require(__dirname + '/../../logger/logger.js');
 const util = require(__dirname + '/../../util.js');
 
 /**

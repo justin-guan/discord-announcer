@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const MongoClient = require('mongodb').MongoClient;
 const voicesynth = require(__dirname + '/voicesynth.js');
 const config = require(__dirname + '/../config/config.js');
-const LOGGER = require(__dirname + '/logger.js');
+const LOGGER = require(__dirname + '/logger/logger.js');
 
 /**
  * sayJoin - Causes the bot to announce a member has joined the voice channel
