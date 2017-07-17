@@ -18,7 +18,7 @@ function initializeDirectory(path) {
   });
 }
 
-initializeDirectory(__dirname + '/../voice');
-initializeDirectory(__dirname + '/../voice/join');
-initializeDirectory(__dirname + '/../voice/leave');
-initializeDirectory(__dirname + '/../logs');
+initializeDirectory(__dirname + '/../../voice');
+initializeDirectory(__dirname + '/../../voice/join');
+initializeDirectory(__dirname + '/../../voice/leave');
+initializeDirectory(__dirname + '/../../logs');
