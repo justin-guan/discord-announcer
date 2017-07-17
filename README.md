@@ -29,15 +29,17 @@ In order to host this bot, you must also set up a [discord bot](#discord). Addit
 ## Running the Bot
 1. Ensure that Node v8.0.0 or higher is installed. This can be checked by running `node -v`. See the <a href=https://nodejs.org/>node.js website</a> for more details on installing the latest version of node.
 2. Run `npm install` to install all necessary dependencies. Some peer dependencies may be missing, these are not necessary to run the bot and can be ignored.
-3. Export the Discord Bot Token and the Voice RSS API Key. This can be done as follows:
+3. Export the Discord Bot Token, the Voice RSS API Key, and the MongoDB url. This can be done as follows:
 ``` sh
 export VOICE_KEY=<VOICE_RSS_API_KEY>
 export DISCORD_TOKEN=<DISCORD_TOKEN>
+export MONGODB_URL=<MONGODB_URL>
 ```
 Or in Windows:
 ``` sh
 set VOICE_KEY=<VOICE_RSS_API_KEY>
 set DISCORD_TOKEN=<DISCORD_TOKEN>
+set MONGODB_URL=<MONGODB_URL>
 ```
 There are other environment variables that can be set. See the [environments variables section](#env) for more information on these variables.
 
