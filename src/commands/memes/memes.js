@@ -1,6 +1,6 @@
 'use strict';
 
-const LOGGER = require(__dirname + '/../../logger.js');
+const LOGGER = require(__dirname + '/../../lib/logger.js');
 
 /**
  * playFile - Plays a music file to the user who invoked the command's voice
@@ -11,8 +11,8 @@ const LOGGER = require(__dirname + '/../../logger.js');
  * @param  {String} path Path to the audio file that will be played.
  */
 async function playFile(info, path) {
-  const connection = await info.message.member.voiceChannel.join();
   try {
+    const connection = await info.message.member.voiceChannel.join();
     connection.playFile(path);
   } catch (e) {
     LOGGER.error(e);
