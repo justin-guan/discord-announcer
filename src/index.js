@@ -9,10 +9,10 @@ const config = require(__dirname + '/../config/config.js');
 const util = require(__dirname + '/libs/util.js');
 
 // Commands
-const admin = require(__dirname + '/commands/admin/admin.js');
-const help = require(__dirname + '/commands/help/help.js');
-const announce = require(__dirname + '/commands/announce/announce.js');
-const memes = require(__dirname + '/commands/memes/memes.js');
+const admin = require(__dirname + '/commands/admin/commands.js');
+const help = require(__dirname + '/commands/help/commands.js');
+const announce = require(__dirname + '/commands/announce/commands.js');
+const memes = require(__dirname + '/commands/memes/commands.js');
 
 const commands = new Map();
 
