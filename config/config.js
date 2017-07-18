@@ -35,6 +35,11 @@ const conf = convict({
       default: '',
       env: 'MONGODB_URL'
     }
+  },
+  onJoinVoiceChannel: {
+    doc: 'The voiceline to say when the bot joins a voice channel',
+    default: '',
+    env: 'ON_JOIN_VOICECHANNEL'
   }
 });
 

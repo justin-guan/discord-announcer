@@ -75,11 +75,14 @@ async function reconnect(client) {
       .then(async (connection) => {
         LOGGER.info(`Successfully joined ${server}`);
         try {
-          const path = await voicesynth.synth(
-            `woof woof`, __dirname + `/../../voice/woof.mp3`);
-          connection.playFile(path);
+          if (config.get('onJoinVoiceChannel')) {
+            const path = await voicesynth.synth(
+              `${config.get('onJoinVoiceChannel')}`,
+              __dirname + `/../../voice/onJoin.mp3`);
+            connection.playFile(path);
+          }
         } catch (err) {
-          LOGGER.error(`Failed to synthesize woof`);
+          LOGGER.error(`Failed to synthesize onJoin.mp3`);
           LOGGER.error(err);
         }
         def.resolve();
