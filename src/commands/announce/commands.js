@@ -1,5 +1,6 @@
 'use strict';
 
+const voicesynth = require(__dirname + '/../../libs/voicesynth.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
 const util = require(__dirname + '/../../libs/util.js');
 
@@ -16,8 +17,15 @@ function summon(info) {
     return;
   }
   info.message.member.voiceChannel.join()
-    .then((connection) => {
+    .then(async (connection) => {
       LOGGER.info(`Joined voice channel ${connection.channel.id}`);
+      try {
+        const path = await voicesynth.synth(
+          `woof woof`, __dirname + `/../../../voice/woof.mp3`);
+        connection.playFile(path);
+      } catch (err) {
+        LOGGER.error(`Failed to synthesize woof`);
+      }
       util.save(info.client);
     })
     .catch(() => {
