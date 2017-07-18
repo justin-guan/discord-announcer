@@ -9,6 +9,7 @@ const config = require(__dirname + '/../config/config.js');
 const util = require(__dirname + '/libs/util.js');
 
 // Commands
+const admin = require(__dirname + '/commands/admin/admin.js');
 const help = require(__dirname + '/commands/help/help.js');
 const announce = require(__dirname + '/commands/announce/announce.js');
 const memes = require(__dirname + '/commands/memes/memes.js');
@@ -16,6 +17,7 @@ const memes = require(__dirname + '/commands/memes/memes.js');
 const commands = new Map();
 
 (function init() {
+  commands.set(config.get('command.trigger') + 'give', admin.give);
   commands.set(config.get('command.trigger') + 'help', help.showHelp);
   commands.set(config.get('command.trigger') + 'summon', announce.summon);
   commands.set(config.get('command.trigger') + 'banish', announce.banish);
@@ -61,17 +63,20 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
-  if (message.author.bot || !commands.get(message.content)) {
+  const split = message.content.split(/\s+/g);
+  if (message.author.bot || !commands.get(split[0])) {
     return;
   }
   try {
     const msg = await message.delete();
-    commands.get(msg.content)({
+    commands.get(split[0])({
       'client': client,
-      'message': msg
+      'message': msg,
+      'arguments': split.slice(1)
     });
   } catch (e) {
-    LOGGER.info(`Failed to execute command ${message.content}`);
+    LOGGER.warn(`Failed to execute command ${message.content}`);
+    LOGGER.warn(e);
   }
 });
 
