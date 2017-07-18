@@ -10,6 +10,7 @@ const util = require(__dirname + '/libs/util.js');
 
 // Commands
 const admin = require(__dirname + '/commands/admin/commands.js');
+const currency = require(__dirname + '/commands/currency/commands.js');
 const help = require(__dirname + '/commands/help/commands.js');
 const announce = require(__dirname + '/commands/announce/commands.js');
 const memes = require(__dirname + '/commands/memes/commands.js');
@@ -17,10 +18,12 @@ const memes = require(__dirname + '/commands/memes/commands.js');
 const commands = new Map();
 
 (function init() {
-  commands.set(config.get('command.trigger') + 'give', admin.give);
+  commands.set(config.get('command.trigger') + 'adminGive', admin.give);
   commands.set(config.get('command.trigger') + 'setCurrency', admin.setCurrency);
   commands.set(config.get('command.trigger') + 'help', help.showHelp);
   commands.set(config.get('command.trigger') + 'commands', help.commands);
+  commands.set(config.get('command.trigger') + 'give', currency.give);
+  commands.set(config.get('command.trigger') + 'currency', currency.checkCurrency);
   commands.set(config.get('command.trigger') + 'summon', announce.summon);
   commands.set(config.get('command.trigger') + 'banish', announce.banish);
   commands.set(config.get('command.trigger') + 'ld', memes.dead);

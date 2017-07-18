@@ -9,6 +9,7 @@ const LOGGER = require(__dirname + '/../../libs/logger.js');
  *
  * @param  {Member} member   A Discord.js Member object
  * @param  {Integer} amount The amount of currency to add
+ * @return {Boolean}        True if successful add, false otherwise 
  */
 async function add(member, amount) {
   let db;
@@ -28,8 +29,10 @@ async function add(member, amount) {
       result[member.id] = amount;
     }
     await db.collection('guilds').updateOne(guild, result);
+    return true;
   } catch (err) {
     LOGGER.error(err);
+    return false;
   } finally {
     if (db) {
       db.close();
