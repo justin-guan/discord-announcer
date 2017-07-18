@@ -204,6 +204,18 @@ function shut(info) {
   }
 }
 
+/**
+ * minorities - Plays minorities.wav
+ *
+ * @param  {JSON} info A JSON object with the discord.js client and user's
+ * message.
+ */
+function minorities(info) {
+  if (errorCheck(info)) {
+    playFile(info, __dirname + '/../../../memes/minorities.wav');
+  }
+}
+
 
 exports.dead = dead;
 exports.crybaby = crybaby;
@@ -219,3 +231,4 @@ exports.cyka = cyka;
 exports.wtf = wtf;
 exports.maple = maple;
 exports.shut = shut;
+exports.minorities = minorities;
