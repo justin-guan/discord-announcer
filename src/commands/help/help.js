@@ -33,7 +33,7 @@ function commands(info) {
   `${trigger}waow       Plays "WAOW!"\n` +
   `${trigger}theplay    Plays beginning of The Play\n` +
   `${trigger}noone      Plays noone.wav\n` +
-  `${trigger}price      Plays beginning of the Price is Right theme song\n`+
+  `${trigger}price      Plays beginning of the Price is Right theme song\n` +
   `${trigger}duel       Plays "It's time to duel"\n` +
   `${trigger}free       Plays "Free game so no bitching"\n` +
   `${trigger}cyka       Plays cyka.wav\n` +
@@ -43,7 +43,7 @@ function commands(info) {
   '```' +
   '***Admin Commands***' +
   '```' +
-  `${trigger}give <User> <Integer>    Gives a user of guild currency\n` +
+  `${trigger}give <User> <Integer>    Gives guild currency to a user\n` +
   `${trigger}setCurrency <String>     Sets the name of the guild currency\n` +
   '```';
   info.message.reply(commandList);
