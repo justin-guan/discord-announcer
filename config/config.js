@@ -1,7 +1,7 @@
 'use strict';
 
 const convict = require('convict');
-const LOGGER = require(__dirname + '/../src/lib/logger.js');
+const LOGGER = require(__dirname + '/../src/libs/logger.js');
 
 const conf = convict({
   voiceRSS: {

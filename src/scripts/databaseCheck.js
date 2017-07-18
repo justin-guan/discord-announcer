@@ -1,21 +1,23 @@
 'use strict';
 
 const MongoClient = require('mongodb').MongoClient;
-const LOGGER = require(__dirname + '/../lib/logger.js');
+const LOGGER = require(__dirname + '/../libs/logger.js');
 const config = require(__dirname + '/../../config/config.js');
 
 
 /**
- * _createCollection - Creates the global_config collection in MongoDB
+ * _createCollection - Creates a collection in MongoDB
+ *
+ * @param  {String} collection Name of the collection to create
  */
-async function _createCollection() {
+async function _createCollection(collection) {
   try {
     let db = await MongoClient.connect(config.get('mongodb.url'));
-    db.createCollection('global_config').then(() => {
+    db.createCollection(collection).then(() => {
       db.close();
     });
   } catch (err) {
-    LOGGER.error('Failed to create global_config collection!');
+    LOGGER.error(`Failed to create ${collection} collection!`);
     process.exit(1);
   }
 }
@@ -50,13 +52,14 @@ async function _createGlobalConfig() {
  * createConnectionsDocument - Create connections document in MongoDB under the
  * global_config collection
  */
-async function createConnectionsDocument() {
+async function initialize() {
   try {
-    await _createCollection();
+    await _createCollection('global_config');
+    await _createCollection('guilds');
     await _createGlobalConfig();
   } catch (err) {
     LOGGER.error('Failed to create connections document!');
   }
 }
 
-createConnectionsDocument();
+initialize();
