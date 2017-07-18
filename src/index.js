@@ -18,6 +18,7 @@ const commands = new Map();
 
 (function init() {
   commands.set(config.get('command.trigger') + 'give', admin.give);
+  commands.set(config.get('command.trigger') + 'setCurrency', admin.setCurrency);
   commands.set(config.get('command.trigger') + 'help', help.showHelp);
   commands.set(config.get('command.trigger') + 'summon', announce.summon);
   commands.set(config.get('command.trigger') + 'banish', announce.banish);
