@@ -47,6 +47,8 @@ There are other environment variables that can be set. See the [environments var
 
 <a name="commands"></a>
 ## Basic Commands
+* `!help` - Links to Github documentation
+* `!commands` - Prints a list of commands
 * `!summon` - Summons the bot into the caller's voice channel
 * `!banish` - Forces the bot to leave the voice channel it is connected to
 * `!ld` - Plays "They're all dead!"
