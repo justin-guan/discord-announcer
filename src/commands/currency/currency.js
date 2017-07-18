@@ -9,7 +9,7 @@ const LOGGER = require(__dirname + '/../../libs/logger.js');
  *
  * @param  {Member} member   A Discord.js Member object
  * @param  {Integer} amount The amount of currency to add
- * @return {Boolean}        True if successful add, false otherwise 
+ * @return {Boolean}        True if successful add, false otherwise
  */
 async function add(member, amount) {
   let db;
@@ -60,6 +60,7 @@ async function get(member) {
     } else if (result.hasOwnProperty(member.id)) {
       return result[member.id];
     }
+    return 0;
   } catch (err) {
     LOGGER.error(err);
     return null;
