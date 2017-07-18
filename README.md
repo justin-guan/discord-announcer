@@ -62,6 +62,7 @@ There are other environment variables that can be set. See the [environments var
 * `!cyka` - Plays cyka.wav
 * `!wtf` - Plays wtf.wav
 * `!shut` - Plays shut.wav
+* `!minorities` - Plays minorities.wav
 
 ## Admin Commands
 * `!give <User> <Integer>` - Gives a user <Integer> of guild currency
