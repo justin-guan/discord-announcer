@@ -3,6 +3,7 @@
 const voicesynth = require(__dirname + '/../../libs/voicesynth.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
 const util = require(__dirname + '/../../libs/util.js');
+const config = require(__dirname + '/../../../config/config.js');
 
 /**
  * summon - Summons the bot to user's voice channel. Replies with an error if
@@ -20,11 +21,15 @@ function summon(info) {
     .then(async (connection) => {
       LOGGER.info(`Joined voice channel ${connection.channel.id}`);
       try {
-        const path = await voicesynth.synth(
-          `woof woof`, __dirname + `/../../../voice/woof.mp3`);
-        connection.playFile(path);
+        if (config.get('onJoinVoiceChannel')) {
+          const path = await voicesynth.synth(
+            `${config.get('onJoinVoiceChannel')}`,
+            __dirname + `/../../../voice/onJoin.mp3`);
+          connection.playFile(path);
+        }
       } catch (err) {
-        LOGGER.error(`Failed to synthesize woof`);
+        LOGGER.error(`Failed to synthesize onJoin.mp3`);
+        LOGGER.error(err);
       }
       util.save(info.client);
     })
