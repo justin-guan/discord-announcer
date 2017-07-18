@@ -46,7 +46,7 @@ There are other environment variables that can be set. See the [environments var
 4. Type `npm start` to start the bot now
 
 <a name="commands"></a>
-## Commands
+## Basic Commands
 * `!summon` - Summons the bot into the caller's voice channel
 * `!banish` - Forces the bot to leave the voice channel it is connected to
 * `!ld` - Plays "They're all dead!"
@@ -62,6 +62,10 @@ There are other environment variables that can be set. See the [environments var
 * `!cyka` - Plays cyka.wav
 * `!wtf` - Plays wtf.wav
 * `!shut` - Plays shut.wav
+
+## Admin Commands
+* `!give <User> <Integer>` - Gives a user <Integer> of guild currency
+* `!setCurrency <String>` - Sets the name of the guild currency
 
 <a name="env"></a>
 ## Environment Variables
