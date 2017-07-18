@@ -65,7 +65,7 @@ client.on('ready', () => {
 
 client.on('message', async (message) => {
   const split = message.content.split(/\s+/g);
-  if (message.author.bot || !commands.get(split[0])) {
+  if (message.author.bot || message.channel.type === "dm" || !commands.get(split[0])) {
     return;
   }
   try {
