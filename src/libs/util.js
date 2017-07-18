@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const MongoClient = require('mongodb').MongoClient;
+const voicesynth = require(__dirname + '/voicesynth.js');
 const config = require(__dirname + '/../../config/config.js');
 const LOGGER = require(__dirname + '/logger.js');
 
@@ -71,8 +72,16 @@ async function reconnect(client) {
         continue;
       }
       client.channels.get(server).join()
-      .then(() => {
+      .then(async (connection) => {
         LOGGER.info(`Successfully joined ${server}`);
+        try {
+          const path = await voicesynth.synth(
+            `woof woof`, __dirname + `/../../voice/woof.mp3`);
+          connection.playFile(path);
+        } catch (err) {
+          LOGGER.error(`Failed to synthesize woof`);
+          LOGGER.error(err);
+        }
         def.resolve();
       })
       .catch(() => {
