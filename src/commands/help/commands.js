@@ -26,6 +26,9 @@ function commands(info) {
   '```' +
   `${trigger}summon     Summons the bot into the caller's voice channel\n` +
   `${trigger}banish     Banish the bot from the caller's voice channel\n` +
+  `${trigger}give <User> <Positive Num> \t`
+                        + `Give guild currency to user\n` +
+  `${trigger}currency   Check current guild currency\n` +
   `${trigger}ld         Plays "They're all dead!"\n` +
   `${trigger}tucker     Plays crybaby\n` +
   `${trigger}tobi       Plays "It's a disastah!"\n` +
@@ -43,7 +46,7 @@ function commands(info) {
   '```' +
   '***Admin Commands***' +
   '```' +
-  `${trigger}give <User> <Integer>    Gives guild currency to a user\n` +
+  `${trigger}adminGive <User> <Integer>    Gives guild currency to a user\n` +
   `${trigger}setCurrency <String>     Sets the name of the guild currency\n` +
   '```';
   info.message.reply(commandList);
