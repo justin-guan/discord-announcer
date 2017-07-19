@@ -28,6 +28,7 @@ function commands(info) {
   `${trigger}banish     Banish the bot from the caller's voice channel\n` +
   `${trigger}give <User> <Positive Num> \t`
                         + `Give guild currency to user\n` +
+  `${trigger}mug <User> Attempts to steal guild currency from a user\n` +
   `${trigger}currency   Check current guild currency\n` +
   `${trigger}ld         Plays "They're all dead!"\n` +
   `${trigger}tucker     Plays crybaby\n` +
