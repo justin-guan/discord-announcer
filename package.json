@@ -1,6 +1,6 @@
 {
   "name": "discord-announcer",
-  "version": "2.6.1",
+  "version": "2.7.1",
   "description": "A discord bot written in Node.js",
   "main": "index.js",
   "scripts": {

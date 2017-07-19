@@ -78,7 +78,7 @@ async function mug(info) {
     return;
   }
   try {
-    if (random(0, 100) >= 0) {
+    if (random(0, 100) >= 90) {
       let amountStolen = 0;
       const targetAmount = await currency.get(target);
       if (targetAmount > 0) {
