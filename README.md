@@ -52,6 +52,7 @@ There are other environment variables that can be set. See the [environments var
 * `!summon` - Summons the bot into the caller's voice channel
 * `!banish` - Forces the bot to leave the voice channel it is connected to
 * `!give <User> <Positive Num>` - Give guild currency to user
+* `!mug <User>` - Attempts to steal guild currency from a user
 * `!currency` - Check current guild currency
 * `!ld` - Plays "They're all dead!"
 * `!tucker` - Plays crybaby

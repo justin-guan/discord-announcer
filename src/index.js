@@ -26,6 +26,7 @@ const commands = new Map();
   commands.set(config.get('command.trigger') + 'give', currency.give);
   commands.set(config.get('command.trigger') + 'currency',
     currency.checkCurrency);
+  commands.set(config.get('command.trigger') + 'mug', currency.mug);
   commands.set(config.get('command.trigger') + 'summon', announce.summon);
   commands.set(config.get('command.trigger') + 'banish', announce.banish);
   commands.set(config.get('command.trigger') + 'ld', memes.dead);
