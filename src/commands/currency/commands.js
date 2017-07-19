@@ -78,7 +78,7 @@ async function mug(info) {
     return;
   }
   try {
-    if (random(0, 100) >= 90) {
+    if (random(0, 100) >= 85) {
       let amountStolen = 0;
       const targetAmount = await currency.get(target);
       if (targetAmount > 0) {
@@ -86,7 +86,8 @@ async function mug(info) {
       }
       await currency.add(info.message.member, amountStolen);
       await currency.add(target, -1 * amountStolen);
-      info.message.reply(`Mugged ${target.toString()} and got ${amountStolen}`);
+      info.message.reply(`Mugged ${target.toString()} and got ${amountStolen} `+
+        `${await currency.getCurrencyType(target.guild)}`);
       LOGGER.info(`${target.id} was mugged by ${info.message.member.id}`);
     } else {
       info.message.channel.send(`${target.toString()} repelled ` +
