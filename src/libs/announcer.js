@@ -16,6 +16,7 @@ async function sayJoin(member) {
     connection.playFile(path);
   } catch (err) {
     LOGGER.error(`Failed to synthesize join voice file for ${name}`);
+    LOGGER.error(err);
   }
 }
 
@@ -34,6 +35,7 @@ async function sayLeave(member) {
     connection.playFile(path);
   } catch (err) {
     LOGGER.error(`Failed to synthesize leave voice file for ${name}`);
+    LOGGER.error(err);
   }
 }
 
