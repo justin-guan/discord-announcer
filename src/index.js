@@ -107,3 +107,7 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
     announcer.sayLeave(oldMember);
   }
 });
+
+client.on('warn', (info) => {
+  LOGGER.warn(info);
+});
