@@ -44,6 +44,7 @@ function commands(info) {
   `${trigger}wtf        Plays wtf.wav\n` +
   `${trigger}shut       Plays shut.wav\n` +
   `${trigger}minorities Plays minorities.wav` +
+  `${trigger}doro       Plays doro.wav` +
   '```' +
   '***Admin Commands***' +
   '```' +

@@ -68,6 +68,7 @@ There are other environment variables that can be set. See the [environments var
 * `!wtf` - Plays wtf.wav
 * `!shut` - Plays shut.wav
 * `!minorities` - Plays minorities.wav
+* `!doro` - Plays doro.wav
 
 ## Admin Commands
 * `!adminGive <User> <Integer>` - Gives a user <Integer> of guild currency
