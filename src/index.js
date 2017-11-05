@@ -44,6 +44,7 @@ const commands = new Map();
   commands.set(config.get('command.trigger') + 'maple', memes.maple);
   commands.set(config.get('command.trigger') + 'shut', memes.shut);
   commands.set(config.get('command.trigger') + 'minorities', memes.minorities);
+  commands.set(config.get('command.trigger') + 'doro', memes.doro);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
