@@ -26,6 +26,7 @@ module.exports = {
     }
     try {
       const connection = await message.member.voiceChannel.join();
+      LOGGER.info(`Joined voice channel ${connection.channel.id}`);
       await _playOnJoin(connection);
     } catch (err) {
       LOGGER.error(err);
