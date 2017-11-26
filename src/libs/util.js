@@ -103,7 +103,6 @@ async function reconnect(client) {
   }
 }
 
-
 exports.shutdown = shutdown;
 exports.save = save;
 exports.reconnect = reconnect;

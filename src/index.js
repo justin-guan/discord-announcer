@@ -1,50 +1,24 @@
 'use strict';
 process.title = 'Discord Announcer';
 
+const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const LOGGER = require(__dirname + '/libs/logger.js');
 const announcer = require(__dirname + '/libs/announcer.js');
 const config = require(__dirname + '/../config/config.js');
 const util = require(__dirname + '/libs/util.js');
+const validate = require(__dirname + '/libs/validate.js');
 
-// Commands
-const admin = require(__dirname + '/commands/admin/commands.js');
-const currency = require(__dirname + '/commands/currency/commands.js');
-const help = require(__dirname + '/commands/help/commands.js');
-const announce = require(__dirname + '/commands/announce/commands.js');
-const memes = require(__dirname + '/commands/memes/commands.js');
+const commandFiles = fs.readdirSync(__dirname + '/commands');
+client.commands = new Discord.Collection();
 
-const commands = new Map();
+for (const file of commandFiles) {
+  const command = require(`${__dirname}/commands/${file}`);
+  client.commands.set(command.name, command);
+}
 
 (function init() {
-  commands.set(config.get('command.trigger') + 'adminGive', admin.give);
-  commands.set(config.get('command.trigger') + 'setCurrency',
-    admin.setCurrency);
-  commands.set(config.get('command.trigger') + 'help', help.showHelp);
-  commands.set(config.get('command.trigger') + 'commands', help.commands);
-  commands.set(config.get('command.trigger') + 'give', currency.give);
-  commands.set(config.get('command.trigger') + 'currency',
-    currency.checkCurrency);
-  commands.set(config.get('command.trigger') + 'mug', currency.mug);
-  commands.set(config.get('command.trigger') + 'summon', announce.summon);
-  commands.set(config.get('command.trigger') + 'banish', announce.banish);
-  commands.set(config.get('command.trigger') + 'ld', memes.dead);
-  commands.set(config.get('command.trigger') + 'tucker', memes.crybaby);
-  commands.set(config.get('command.trigger') + 'tobi', memes.disastah);
-  commands.set(config.get('command.trigger') + 'zhou', memes.patience);
-  commands.set(config.get('command.trigger') + 'waow', memes.wow);
-  commands.set(config.get('command.trigger') + 'theplay', memes.theplay);
-  commands.set(config.get('command.trigger') + 'noone', memes.noone);
-  commands.set(config.get('command.trigger') + 'price', memes.price);
-  commands.set(config.get('command.trigger') + 'duel', memes.duel);
-  commands.set(config.get('command.trigger') + 'free', memes.free);
-  commands.set(config.get('command.trigger') + 'cyka', memes.cyka);
-  commands.set(config.get('command.trigger') + 'wtf', memes.wtf);
-  commands.set(config.get('command.trigger') + 'maple', memes.maple);
-  commands.set(config.get('command.trigger') + 'shut', memes.shut);
-  commands.set(config.get('command.trigger') + 'minorities', memes.minorities);
-  commands.set(config.get('command.trigger') + 'doro', memes.doro);
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
@@ -61,7 +35,7 @@ process.on('SIGQUIT', () => {
 });
 
 client.on('ready', () => {
-  client.user.setGame('with Node.js');
+  client.user.setGame(`in ${client.guilds.size} servers`);
   util.reconnect(client)
     .catch(() => {
       LOGGER.warn('Failed to rejoin some channels...');
@@ -73,18 +47,15 @@ client.on('ready', () => {
 });
 
 client.on('message', async (message) => {
-  const split = message.content.split(/\s+/g);
-  if (message.author.bot || message.channel.type === 'dm' ||
-      !commands.get(split[0])) {
+  const args = message.content.slice(config.get('command.trigger').length)
+    .split(/\s+/);
+  const command = args.shift().toLowerCase();
+  if (!validate.isValidCommand(message, command, client.commands)) {
     return;
   }
   try {
     const msg = await message.delete();
-    commands.get(split[0])({
-      'client': client,
-      'message': msg,
-      'arguments': split.slice(1)
-    });
+    client.commands.get(command).execute(client, msg, args);
   } catch (e) {
     LOGGER.warn(`Failed to execute command ${message.content}`);
     LOGGER.warn(e);
