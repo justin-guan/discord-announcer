@@ -55,7 +55,7 @@ client.on('message', async (message) => {
   }
   try {
     const msg = await message.delete();
-    client.commands.get(command).execute(client, msg, args);
+    client.commands.get(command).execute(msg, args);
   } catch (e) {
     LOGGER.warn(`Failed to execute command ${message.content}`);
     LOGGER.warn(e);

@@ -19,7 +19,7 @@ async function _playOnJoin(connection) {
 module.exports = {
   name: 'summon',
   description: 'Summons the bot to the user\'s voice channel.',
-  async execute(client, message) {
+  async execute(message) {
     if (!message.member.voiceChannel) {
       message.reply('You need to be in a voice channel to summon me');
       return;
@@ -31,7 +31,7 @@ module.exports = {
     } catch (err) {
       LOGGER.error(err);
     } finally {
-      util.save(client);
+      util.save(message.client);
     };
   },
 };
