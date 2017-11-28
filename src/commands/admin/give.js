@@ -1,4 +1,3 @@
-const permission = require(__dirname + '/../helpers/permission.js');
 const utils = require(__dirname + '/../helpers/util.js');
 const currency = require(__dirname + '/../../libs/currency.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
@@ -32,7 +31,7 @@ function _checkArguments(message, args) {
  * @return {Boolean} True if used correctly, false otherwise
  */
 function _isValidUsage(message, args) {
-  if (!permission.isAdmin(message.member, message.guild)) {
+  if (!utils.isAdmin(message.member, message.guild)) {
     message.reply('You are not an Admin');
     return false;
   }
