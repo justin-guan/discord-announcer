@@ -6,13 +6,10 @@ module.exports = {
   description: 'Command for help/commands',
   execute(message) {
     const commands = [];
-    // TODO: Formatting
-    commands.push('***Basic Commands***');
-    commands.push('```');
+    commands.push('\n***Basic Commands***\n');
     message.client.commands.map((command) => {
-      commands.push(`${trigger}${command.name}\n${command.description}\n`);
+      commands.push(`**${trigger}${command.name}** - ${command.description}`);
     });
-    commands.push('```');
-    message.reply(commands, {split: true});
+    message.channel.send(commands, {split: true});
   },
 };
