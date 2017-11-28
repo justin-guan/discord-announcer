@@ -10,11 +10,11 @@ const config = require(__dirname + '/../config/config.js');
 const util = require(__dirname + '/libs/util.js');
 const validate = require(__dirname + '/libs/validate.js');
 
-const commandFiles = fs.readdirSync(__dirname + '/commands');
+const basicCommandFiles = fs.readdirSync(__dirname + '/commands/basic');
 client.commands = new Discord.Collection();
 
-for (const file of commandFiles) {
-  const command = require(`${__dirname}/commands/${file}`);
+for (const file of basicCommandFiles) {
+  const command = require(`${__dirname}/commands/basic/${file}`);
   client.commands.set(command.name, command);
 }
 

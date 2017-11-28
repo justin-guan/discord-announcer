@@ -1,4 +1,4 @@
-const config = require(__dirname + '/../../config/config.js');
+const config = require(__dirname + '/../../../config/config.js');
 const trigger = config.get('command.trigger');
 
 module.exports = {

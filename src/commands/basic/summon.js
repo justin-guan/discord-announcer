@@ -1,7 +1,7 @@
-const voicesynth = require(__dirname + '/../libs/voicesynth.js');
-const LOGGER = require(__dirname + '/../libs/logger.js');
-const util = require(__dirname + '/../libs/util.js');
-const config = require(__dirname + '/../../config/config.js');
+const voicesynth = require(__dirname + '/../../libs/voicesynth.js');
+const LOGGER = require(__dirname + '/../../libs/logger.js');
+const util = require(__dirname + '/../../libs/util.js');
+const config = require(__dirname + '/../../../config/config.js');
 
 /**
  * Plays the on join audio if necessary
@@ -11,7 +11,7 @@ async function _playOnJoin(connection) {
   if (config.get('onJoinVoiceChannel')) {
     const path = await voicesynth.synth(
       `${config.get('onJoinVoiceChannel')}`,
-      __dirname + `/../../voice/onJoin.mp3`);
+      __dirname + `/../../../voice/onJoin.mp3`);
     connection.playFile(path);
   }
 }

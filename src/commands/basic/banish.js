@@ -1,5 +1,5 @@
-const LOGGER = require(__dirname + '/../libs/logger.js');
-const util = require(__dirname + '/../libs/util.js');
+const LOGGER = require(__dirname + '/../../libs/logger.js');
+const util = require(__dirname + '/../../libs/util.js');
 
 module.exports = {
   name: 'banish',
