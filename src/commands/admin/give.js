@@ -49,7 +49,7 @@ function _isValidUsage(message, args) {
 
 module.exports = {
   name: 'admin-give',
-  description: 'Give guild currency to a user as an admin',
+  description: 'An admin command to give currency to a user',
   async execute(message, args) {
     if (!_isValidUsage(message, args)) {
       return;
