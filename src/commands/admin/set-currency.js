@@ -50,7 +50,7 @@ module.exports = {
       LOGGER.info(`Changed guild ${message.guild.name} (${message.guild.id}) ` +
         `currency to ${args[0]}`);
     } catch (err) {
-      info.message.reply('Something went wrong. Try again later.');
+      message.reply('Something went wrong. Try again later.');
       LOGGER.error(`Failed to change guild ${message.guild.name} ` +
         `(${message.guild.id}) currency to ${args[0]}\n${err}`);
     }

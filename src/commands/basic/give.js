@@ -91,7 +91,8 @@ module.exports = {
       await _doTransaction(sender, receiver, amount, message);
     } catch (err) {
       message.reply('Something went wrong. Try again later.');
-      LOGGER.error(err);
+      LOGGER.error(`${utils.getName(sender)} failed to send ` +
+        `${utils.getName(receiver)} ${amount}\n${err}`);
     }
   },
 };
