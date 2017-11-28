@@ -1,17 +1,8 @@
 const permission = require(__dirname + '/../helpers/permission.js');
+const utils = require(__dirname + '/../helpers/util.js');
 const currency = require(__dirname + '/../../libs/currency.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
 const config = require(__dirname + '/../../../config/config.js');
-
-/**
- * _getName - Get either the nickname of username of the member
- *
- * @param {Member} member A Discord.js Member object
- * @return {String} The nickname of the member, otherwise their username
- */
-function _getName(member) {
-  return member.nickname ? member.nickname : member.user.username;
-}
 
 /**
  * _checkArguments - Checks if the arguments are valid
@@ -25,7 +16,8 @@ function _checkArguments(message, args) {
   if (isNaN(parseInt(args[1])) || member === undefined) {
     message.reply(
       'Invalid command usage\n' +
-      `Usage: \`${config.get('command.trigger')}give <User> <Integer>\``
+      `Usage: \`${config.get('command.trigger')}${module.exports.name} ` +
+      `<User> <Integer>\``
     );
     return false;
   }
@@ -57,7 +49,7 @@ module.exports = {
     const member = message.mentions.members.first();
     try {
       await currency.add(member, parseInt(args[1]));
-      const name = _getName(member);
+      const name = utils.getName(member);
       const recvAmount = await currency.get(member);
       const currencyType = await currency.getCurrencyType(member.guild);
       message.reply(`Gave ${name} ${args[1]} ${currencyType}\n` +
@@ -66,7 +58,7 @@ module.exports = {
         `server ${message.guild.name} (${message.guild.id})`);
     } catch (err) {
       message.reply('Something went wrong. Try again later.');
-      LOGGER.error(`Failed to give ${args[1]} to ${_getName(member)}` +
+      LOGGER.error(`Failed to give ${args[1]} to ${utils.getName(member)}` +
         `(${member.id})\n${err}`);
     }
   },
