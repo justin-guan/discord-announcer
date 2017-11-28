@@ -66,8 +66,9 @@ async function _doTransaction(sender, receiver, sendAmount, message) {
     message.reply(`You don't have enough ${currencyType}`);
     return;
   }
-  await currency.add(sender, -1 * sendAmount);
-  await currency.add(receiver, sendAmount);
+  if (await currency.add(sender, -1 * sendAmount)) {
+    await currency.add(receiver, sendAmount);
+  }
   const rName = utils.getName(receiver);
   const sName = utils.getName(sender);
   message.channel.send(
