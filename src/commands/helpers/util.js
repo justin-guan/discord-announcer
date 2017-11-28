@@ -20,5 +20,17 @@ function isAdmin(member, guild) {
   return member.roles.has(adminRole.id);
 }
 
+/**
+ * random - Generates a random number between min and max
+ *
+ * @param  {Number} min Lower bound for random number generation
+ * @param  {Number} max Upper bound for random number generation
+ * @return {Number}     A random number generated between the bounds
+ */
+function random(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
 exports.getName = getName;
 exports.isAdmin = isAdmin;
+exports.random = random;
