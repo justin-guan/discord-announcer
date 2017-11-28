@@ -24,7 +24,7 @@ function _isValidUsage(message, args) {
 }
 
 /**
- * Checks if the user has enough currency to send
+ * _hasEnoughCurrency - Checks if the user has enough currency to send
  *
  * @param {Integer} amount The amount that is to be sent
  * @param {Member} sender A Discord.js Member object
@@ -33,7 +33,7 @@ function _isValidUsage(message, args) {
 async function _hasEnoughCurrency(amount, sender) {
   try {
     const total = await currency.get(sender);
-    return isValidTransfer(amount, total);
+    return _isValidTransfer(amount, total);
   } catch (err) {
     LOGGER.error(`Failed to get ${utils.getName(sender)}` +
       `(${sender.id}) currency`);
@@ -42,13 +42,13 @@ async function _hasEnoughCurrency(amount, sender) {
 }
 
 /**
- * Check if the transfer amounts are valid
+ * _isValidTransfer - Check if the transfer amounts are valid
  *
  * @param {Integer} amount The amount that is to be sent
  * @param {Integer} total The total amount that the sender has
  * @return {Boolean} True if the user has enough currency to send
  */
-function isValidTransfer(amount, total) {
+function _isValidTransfer(amount, total) {
   return amount <= total && total >= 0;
 }
 
