@@ -13,6 +13,7 @@ const validate = require(__dirname + '/libs/validate.js');
 const basicCommandFiles = fs.readdirSync(__dirname + '/commands/basic');
 const adminCommandFiles = fs.readdirSync(__dirname + '/commands/admin');
 client.commands = new Discord.Collection();
+client.cooldowns = new Discord.Collection();
 
 for (const file of basicCommandFiles) {
   const command = require(`${__dirname}/commands/basic/${file}`);
@@ -42,6 +43,9 @@ process.on('SIGQUIT', () => {
 
 client.on('ready', () => {
   client.user.setGame(`in ${client.guilds.size} servers`);
+  client.guilds.map((guild) => {
+    client.cooldowns.set(guild.id, new Discord.Collection());
+  });
   util.reconnect(client)
     .catch(() => {
       LOGGER.warn('Failed to rejoin some channels...');
@@ -50,6 +54,14 @@ client.on('ready', () => {
       util.save(client);
       LOGGER.info('Client ready');
     });
+});
+
+client.on('guildCreate', (guild) => {
+  client[cooldowns][guild.id] = {};
+});
+
+client.on('guildDelete', (guild) => {
+  delete client[cooldowns][guild.id];
 });
 
 client.on('message', async (message) => {
@@ -61,6 +73,26 @@ client.on('message', async (message) => {
   }
   try {
     const msg = await message.delete();
+    const commandName = client.commands.get(command).name;
+    if (!client.cooldowns.get(message.guild.id).has(message.member.id)) {
+      client.cooldowns
+        .get(message.guild.id)
+        .set(message.member.id, new Discord.Collection());
+    }
+    if (client.cooldowns.get(message.guild.id).get(message.member.id).has(commandName)) {
+      message.reply(`Can't do this yet`);
+      return;
+    }
+    client.cooldowns
+      .get(message.guild.id)
+      .get(message.member.id)
+      .set(commandName, Date.now());
+    setTimeout(() => {
+      client.cooldowns
+        .get(message.guild.id)
+        .get(message.member.id)
+        .delete(commandName);
+    }, client.commands.get(command).cooldown * 1000);
     client.commands.get(command).execute(msg, args);
   } catch (e) {
     LOGGER.warn(`Failed to execute command ${message.content}`);

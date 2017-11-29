@@ -37,10 +37,10 @@ async function _onSuccessfulMug(target, message) {
     }
     await currency.add(mugger, amountStolen);
     await currency.add(target, -1 * amountStolen);
-    message.reply(`Mugged ${utils.getName(target)} and got ${amountStolen} `+
+    message.reply(`Mugged ${target.toString()} and got ${amountStolen} `+
     `${await currency.getCurrencyType(target.guild)}`);
     LOGGER.info(`${utils.getName(target)} (${target.id}) was mugged by ` +
-      `${utils.getName(mugger)} (${mugger.id}`);
+      `${utils.getName(mugger)} (${mugger.id})`);
   } catch (err) {
     message.reply('Something went wrong. Try again later.');
     LOGGER.error(`Something went wrong when ${utils.getName(mugger)}` +
@@ -55,8 +55,8 @@ async function _onSuccessfulMug(target, message) {
  */
 function _onUnsuccessfulMug(target, message) {
   const mugger = message.member;
-  message.channel.send(`${utils.getName(target)} repelled ` +
-  `${mugger.member}'s mugging`);
+  message.channel.send(`${target.toString()} repelled ` +
+  `${mugger.toString()}'s mugging`);
   LOGGER.info(`${utils.getName(target)} (${target.id}) repelled ` +
     `${utils.getName(mugger)}(${mugger.id})`);
 }
@@ -78,6 +78,7 @@ function _doMugging(target, message) {
 module.exports = {
   name: 'mug',
   description: 'Commit crime by mugging someone...',
+  cooldown: 5,
   async execute(message, args) {
     if (!_isValidUsage(message, args)) {
       return;
