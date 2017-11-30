@@ -56,14 +56,6 @@ client.on('ready', () => {
     });
 });
 
-client.on('guildCreate', (guild) => {
-  client[cooldowns][guild.id] = {};
-});
-
-client.on('guildDelete', (guild) => {
-  delete client[cooldowns][guild.id];
-});
-
 client.on('message', async (message) => {
   const args = message.content.slice(config.get('command.trigger').length)
     .split(/\s+/);
@@ -73,26 +65,23 @@ client.on('message', async (message) => {
   }
   try {
     const msg = await message.delete();
+    const guildId = msg.guild.id;
+    const memberId = msg.member.id;
     const commandName = client.commands.get(command).name;
-    if (!client.cooldowns.get(message.guild.id).has(message.member.id)) {
-      client.cooldowns
-        .get(message.guild.id)
-        .set(message.member.id, new Discord.Collection());
+    const guildCooldowns = client.cooldowns.get(guildId);
+    const cooldown = client.commands.get(command).cooldown * 1000;
+    if (!client.cooldowns.get(guildId).has(memberId)) {
+      guildCooldowns.set(memberId, new Discord.Collection());
     }
-    if (client.cooldowns.get(message.guild.id).get(message.member.id).has(commandName)) {
-      message.reply(`Can't do this yet`);
+    if (client.cooldowns.get(guildId).get(memberId).has(commandName)) {
+      const expiration = guildCooldowns.get(memberId).get(commandName);
+      const timeLeft = (expiration + cooldown - Date.now()) / 1000;
+      msg.reply(`Can't do this for another ${timeLeft} seconds`);
       return;
     }
-    client.cooldowns
-      .get(message.guild.id)
-      .get(message.member.id)
-      .set(commandName, Date.now());
-    setTimeout(() => {
-      client.cooldowns
-        .get(message.guild.id)
-        .get(message.member.id)
-        .delete(commandName);
-    }, client.commands.get(command).cooldown * 1000);
+    guildCooldowns.get(memberId).set(commandName, Date.now());
+    setTimeout(() => guildCooldowns.get(memberId).delete(commandName),
+      cooldown);
     client.commands.get(command).execute(msg, args);
   } catch (e) {
     LOGGER.warn(`Failed to execute command ${message.content}`);
