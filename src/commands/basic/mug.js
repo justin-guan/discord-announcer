@@ -58,7 +58,7 @@ function _onUnsuccessfulMug(target, message) {
   message.channel.send(`${target.toString()} repelled ` +
   `${mugger.toString()}'s mugging`);
   LOGGER.info(`${utils.getName(target)} (${target.id}) repelled ` +
-    `${utils.getName(mugger)}(${mugger.id})`);
+    `${utils.getName(mugger)}(${mugger.id})'s mugging`);
 }
 
 /**

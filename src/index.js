@@ -14,6 +14,7 @@ const basicCommandFiles = fs.readdirSync(__dirname + '/commands/basic');
 const adminCommandFiles = fs.readdirSync(__dirname + '/commands/admin');
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
+client.collectors = new Discord.Collection();
 
 for (const file of basicCommandFiles) {
   const command = require(`${__dirname}/commands/basic/${file}`);
