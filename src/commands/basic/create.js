@@ -4,14 +4,51 @@ const LOGGER = require(__dirname + '/../../libs/logger.js');
 const config = require(__dirname + '/../../../config/config.js');
 
 /**
- * _collectName - collects the name for a custom command
+ * _isValidName - Checks if the name has invalid characters
+ *
+ * @param {String} name The name of the command
+ * @return {Boolean} Returns true if valid, false otherwise
+ */
+function _isValidName(name) {
+  return name !== undefined && name.replace(/ /g, '') !== '';
+}
+
+/**
+ * _commandAlreadyExists - Checks if a command with the name already exists
+ *
+ * @param {Message} msg A Discord.js Message object
+ * @return {Boolean} Returns true if command already exists, false otherwise
+ */
+function _commandAlreadyExists(msg) {
+  if (msg.client.commands.has(msg.content)) {
+    msg.author.send('Invalid name. A command with this name already exists');
+    return true;
+  }
+  return false;
+}
+
+/**
+ * _isValidCommandName - Checks if the command name is valid
+ *
+ * @param {Message} msg A Discord.js Message object
+ * @return {Boolean} Returns true if valid, false otherwise
+ */
+function _isValidCommandName(msg) {
+  if (!_isValidName(msg.content)) {
+    msg.author.send('Invalid name. Please enter a new one');
+    return false;
+  }
+  return !_commandAlreadyExists(msg);
+}
+
+/**
+ * _collectName - Collects the name for a custom command
  *
  * @param {Message} msg A Discord.js Message object
  * @return {String} The name of the custom command submitted by the user
  */
 function _collectName(msg) {
-  if (msg.content === undefined || msg.content === ' ') {
-    msg.author.send('Invalid name. Please enter a new one');
+  if (!_isValidCommandName(msg)) {
     return undefined;
   }
   msg.author.send(
@@ -89,14 +126,19 @@ function _collectDescription(msg, type) {
  * valid for an audio based command
  *
  * @param {Message} msg A Discord.js Message object
- * @return {Boolean} True if valid, false otherwise
+ * @return {String} The audio url if valid, null if cancel signal, or
+ * undefined if neither
  */
 function _isValidAudioAction(msg) {
+  if (msg.content.toLowerCase() === 'cancel') {
+    msg.author.send('Command creation cancelled');
+    return null;
+  }
   if (msg.attachments.first() === undefined) {
     msg.author.send('You need to upload an audio file');
-    return false;
+    return undefined;
   }
-  return true;
+  return msg.attachments.first().url;
 }
 
 /**
@@ -104,14 +146,14 @@ function _isValidAudioAction(msg) {
  * valid for a text based command
  *
  * @param {Message} msg A Discord.js Message object
- * @return {Boolean} True if valid, false otherwise
+ * @return {String} The action if valid, undefined otherwise
  */
 function _isValidTextAction(msg) {
   if (msg.content === undefined) {
     msg.author.send('Invalid text. Please enter something else.');
-    return false;
+    return undefined;
   }
-  return true;
+  return msg.content;
 }
 
 /**
@@ -119,7 +161,8 @@ function _isValidTextAction(msg) {
  *
  * @param {Message} msg A Discord.js Message object
  * @param {Integer} type The type of the custom command
- * @return {Boolean} True if valid, false otherwise
+ * @return {String} The action if valid, null if cancel signal (audio only), or
+ * undefined if neither
  */
 function _isValidAction(msg, type) {
   if (type === 1) {
@@ -173,8 +216,9 @@ function _getAction(msg, type, command) {
  * or the text for the command
  */
 function _collectAction(msg, type, command) {
-  if (!_isValidAction(msg, type)) {
-    return undefined;
+  let result = _isValidAction(msg, type);
+  if (result === undefined || result === null) {
+    return result;
   }
   return _getAction(msg, type, command);
 }
@@ -332,7 +376,9 @@ function _collectInfo(dmChannel, authorId) {
         break;
       case 3: // Action
         command.action = _collectAction(msg, command.type, command);
-        if (command.action !== undefined) {
+        if (command.action === null) {
+          collector.stop();
+        } else if (command.action !== undefined) {
           step++;
         }
         break;
