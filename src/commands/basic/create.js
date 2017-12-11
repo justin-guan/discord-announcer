@@ -1,52 +1,7 @@
-const Discord = require('discord.js');
 const utils = require(__dirname + '/../helpers/util.js');
 const currency = require(__dirname + '/../../libs/currency.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
 const config = require(__dirname + '/../../../config/config.js');
-
-/**
- * playFile - Plays an audio file to the user who invoked the command's voice
- * channel
- *
- * @param {Message} message A Discord.js Message
- * @param {String} path Path to the audio file that will be played
- */
-async function playFile(message, path) {
-  try {
-    const connection = await message.member.voiceChannel.join();
-    connection.playFile(path);
-  } catch (err) {
-    LOGGER.error(`Failed to play audio at ${path}\n${err}`);
-  }
-}
-
-/**
- * _isValidUsage - checks if the command was used correctly
- *
- * @param {Message} message A Discord.js Message object
- * @param {String[]} args The arguments passed in for the command
- * @return {Boolean} True if used correctly, false otherwise
- */
-function _isValidUsage(message, args) {
-  if (args.length != 1 || message.attachments.first() === undefined) {
-    message.reply(
-      `Invalid command usage\n` +
-      `Usage: \`${config.get('command.trigger')}create-voice <String>\`` +
-      'There must be an audio file attached to the message'
-    )
-    return false;
-  }
-  return true;
-}
-
-function _commandAlreadyExists(message, args) {
-  const commands = message.client.commands;
-  if (commands.has(args[0])) {
-    message.reply('This command already exists');
-    return false;
-  }
-  return true;
-}
 
 /**
  * _collectName - collects the name for a custom command
@@ -186,7 +141,7 @@ function _isValidAction(msg, type) {
 function _getAction(msg, type, command) {
   let action;
   let reply = 'Creating a voice command\n' +
-  `Name: ${command.name}\n` +
+  `Name: ${config.get('command.trigger')}${command.name}\n` +
   `Description: ${command.description}\n`;
   if (type === 1) {
     action = msg.attachments.first().url;
@@ -246,16 +201,96 @@ function _isValidConfirmation(msg) {
 }
 
 /**
+ * _playFile - Plays a music file to the user who invoked the command's voice
+ * channel.
+ *
+ * @param  {Message} message A Discord.js Message object
+ * @param  {String} url Path to the audio file that will be played.
+ */
+async function _playFile(message, url) {
+  try {
+    const connection = await message.member.voiceChannel.join();
+    connection.playStream(url);
+  } catch (e) {
+    LOGGER.error(e);
+  }
+}
+
+/**
+ * _setUpCommandJsonExecuteForAudio - Wraps the execute command for an
+ * audio command in JSON
+ *
+ * @param {JSON} command The command info for the custom command
+ * @return {JSON} Returns the JSON object for the custom command with only the
+ * execute function in it
+ */
+function _setUpCommandJsonExecuteForAudio(command) {
+  return {
+    execute(message) {
+      _playFile(message, command.action);
+    },
+  };
+}
+
+/**
+ * _setUpCommandJsonExecuteForText - Wraps the execute command for a
+ * text command in JSON
+ *
+ * @param {JSON} command The command info for the custom command
+ * @return {JSON} Returns the JSON object for the custom command with only the
+ * execute function in it
+ */
+function _setUpCommandJsonExecuteForText(command) {
+  return {
+    execute(message) {
+      message.reply(command.action);
+    },
+  };
+}
+
+/**
+ * _setUpCommandJson - Sets up the JSON structure to store in the client
+ * for the command
+ *
+ * @param {JSON} command The command info for the custom command
+ * @return {JSON} Returns the JSON object for the command that will be stored
+ * in the client
+ */
+function _setUpCommandJson(command) {
+  let json;
+  if (command.type === 1) {
+    json = _setUpCommandJsonExecuteForAudio(command);
+  } else {
+    json = _setUpCommandJsonExecuteForText(command);
+  }
+  json.name = command.name;
+  json.description = command.description;
+  return json;
+}
+
+/**
+ * _setUpCommand - Sets up the command in the client handler and in database
+ *
+ * @param {Message} msg A Discord.js Message object
+ * @param {JSON} command The command info for the custom command
+ */
+function _setUpCommand(msg, command) {
+  const custom = _setUpCommandJson(command);
+  msg.client.commands.set(command.name, custom);
+}
+
+/**
  * _createCommand - Creates the custom command.
  *
  * @param {Message} msg A Discord.js Message object
- * @param {Integer} type The type of the custom command
+ * @param {JSON} command The command info for the custom command
  * @return {Boolean} True if the collector should be destroyed, false
  * otherwise.
  */
-function _createCommand(msg, type) {
+function _createCommand(msg, command) {
   let shouldDestroyCollector = false;
   if (_isValidConfirmation(msg)) {
+    _setUpCommand(msg, command);
     shouldDestroyCollector = true;
   } else {
     msg.author.send('Please choose Y/N');
@@ -282,30 +317,30 @@ function _collectInfo(dmChannel, authorId) {
         if (command.name !== undefined) {
           step++;
         }
-        return;
+        break;
       case 1: // Type
         command.type = _collectType(msg);
         if (command.type !== undefined) {
           step++;
         }
-        return;
+        break;
       case 2: // Description
         command.description = _collectDescription(msg, command.type);
         if (command.description !== undefined) {
           step++;
         }
-        return;
+        break;
       case 3: // Action
         command.action = _collectAction(msg, command.type, command);
         if (command.action !== undefined) {
           step++;
         }
-        return;
+        break;
       case 4: // Create
-        if (_createCommand(msg, command.type)) {
+        if (_createCommand(msg, command)) {
           collector.stop();
         }
-        return;
+        break;
     }
   });
 }
