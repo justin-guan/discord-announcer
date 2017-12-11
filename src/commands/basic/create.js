@@ -343,11 +343,12 @@ function _createCommand(msg, command) {
 }
 
 /**
- * _collectInfo - Collects information from the user about command creation
+ * _startCommandCreation - Collects information from the user about command
+ * creation
  * @param {Channel} dmChannel A Discord.js DM Channel
  * @param {String} authorId The Discord ID number of the user
  */
-function _collectInfo(dmChannel, authorId) {
+function _startCommandCreation(dmChannel, authorId) {
   const collector = dmChannel.createMessageCollector(
     (m) => m.author.id === authorId
   );
@@ -403,7 +404,7 @@ async function _shouldAllowCommandCreation(message) {
   if (message.client.collectors.has(message.author.id)) {
     message.reply(
       `You're already creating a command. Please finish creating ` +
-      'that command first. Check your DMs for a message from me about' +
+      'that command first. Check your DMs for a message from me about ' +
       'creating custom commands.'
     );
     return false;
@@ -427,7 +428,7 @@ module.exports = {
       const dm = await message.author.send(
         `Creating a command in ${message.guild.name}`);
       message.client.collectors.set(message.author.id, true);
-      _collectInfo(dm.channel, message.author.id);
+      _startCommandCreation(dm.channel, message.author.id);
     } catch (err) {
       LOGGER.error(err);
     }
