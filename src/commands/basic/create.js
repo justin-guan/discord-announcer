@@ -377,6 +377,7 @@ function _collectInfo(dmChannel, authorId) {
       case 3: // Action
         command.action = _collectAction(msg, command.type, command);
         if (command.action === null) {
+          msg.client.collectors.delete(msg.author.id);
           collector.stop();
         } else if (command.action !== undefined) {
           step++;
@@ -391,16 +392,35 @@ function _collectInfo(dmChannel, authorId) {
   });
 }
 
+/**
+ * _shouldAllowCommandCreation - Check if the user is already currently in
+ * the process of creating a command, and if the user has enough currency
+ * to create a command
+ * @param {Message} message A Discord.js Message object
+ * @return {Boolean} True if the user meets all requirements, false otherwise
+ */
+async function _shouldAllowCommandCreation(message) {
+  if (message.client.collectors.has(message.author.id)) {
+    message.reply(
+      `You're already creating a command. Please finish creating ` +
+      'that command first. Check your DMs for a message from me about' +
+      'creating custom commands.'
+    );
+    return false;
+  } else if (await currency.get(message.member) < module.exports.cost) {
+    message.reply(`You don't have enough ` +
+      `${await currency.getCurrencyType(message.guild)} to do this`);
+    return false;
+  }
+  return true;
+}
+
 module.exports = {
   name: 'create',
   description: 'Create a custom command',
+  cost: 10,
   async execute(message) {
-    if (message.client.collectors.has(message.author.id)) {
-      message.reply(
-        `You're already creating a command. Please finish creating ` +
-        'that command first. Check your DMs for a message from me about' +
-        'creating custom commands.'
-      );
+    if (!await _shouldAllowCommandCreation(message)) {
       return;
     }
     try {
