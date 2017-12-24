@@ -35,8 +35,7 @@ async function _onSuccessfulMug(target, message) {
     if (targetTotal > 0) {
       amountStolen = Math.round(utils.random(0.01, 0.3) * targetTotal);
     }
-    await currency.add(mugger, amountStolen);
-    await currency.add(target, -1 * amountStolen);
+    await currency.transfer(target, mugger, amountStolen);
     message.reply(`Mugged ${target.toString()} and got ${amountStolen} `+
     `${await currency.getCurrencyType(target.guild)}`);
     LOGGER.info(`${utils.getName(target)} (${target.id}) was mugged by ` +

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-mongoose.Promise = global.Promise; // require('bluebird');
+mongoose.Promise = require('bluebird');
 const Guild = require(__dirname + '/../models/guild.js');
 const config = require(__dirname + '/../../config/config.js');
 
@@ -48,8 +48,8 @@ async function _getGuild(id) {
 async function add(member, amount) {
   try {
     const guild = await _getGuild(member.guild.id);
-    guild.addUserCurrency(member.id, amount);
-    guild.save();
+    await guild.addUserCurrency(member.id, amount);
+    await guild.save();
   } catch (e) {
     throw e;
   }
@@ -64,9 +64,9 @@ async function add(member, amount) {
 async function transfer(sender, receiver, amount) {
   try {
     const guild = await _getGuild(sender.guild.id);
-    guild.addUserCurrency(sender.id, -1 * amount);
-    guild.addUserCurrency(receiver.id, amount);
-    guild.save();
+    await guild.addUserCurrency(sender.id, -1 * amount);
+    await guild.addUserCurrency(receiver.id, amount);
+    await guild.save();
   } catch (e) {
     throw e;
   }
@@ -81,7 +81,7 @@ async function transfer(sender, receiver, amount) {
 async function get(member) {
   try {
     const guild = await _getGuild(member.guild.id);
-    guild.save();
+    await guild.save();
     return guild.getUserCurrency(member.id);
   } catch (e) {
     throw e;
@@ -97,7 +97,7 @@ async function get(member) {
 async function getCurrencyType(g) {
   try {
     const guild = await _getGuild(g.id);
-    guild.save();
+    await guild.save();
     return guild.currency.type;
   } catch (e) {
     throw e;
@@ -114,7 +114,7 @@ async function setCurrencyType(g, type) {
   try {
     const guild = await _getGuild(g.id);
     guild.currency.type = type;
-    guild.save();
+    await guild.save();
   } catch (e) {
     throw e;
   }

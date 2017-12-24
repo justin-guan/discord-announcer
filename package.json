@@ -4,7 +4,7 @@
   "description": "A discord bot written in Node.js",
   "main": "index.js",
   "scripts": {
-    "prestart": "node src/scripts/directoryCheck.js && node src/scripts/databaseCheck.js",
+    "prestart": "node src/scripts/directoryCheck.js",
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

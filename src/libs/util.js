@@ -1,10 +1,33 @@
 'use strict';
 
 const Promise = require('bluebird');
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
+const GlobalConfig = require(__dirname + '/../models/config.js');
 const voicesynth = require(__dirname + '/voicesynth.js');
 const config = require(__dirname + '/../../config/config.js');
 const LOGGER = require(__dirname + '/logger.js');
+
+mongoose.connect(config.get('mongodb.url'), {useMongoClient: true}, (err) => {
+  if (err) {
+    throw err;
+  }
+});
+
+/**
+ * @return {GlobalConfig} The Mongoose object that corresponds to the global
+ * config
+ */
+async function _getGlobalConfig() {
+  try {
+    let globalConfig = await GlobalConfig.findOne({setting: 'connections'});
+    if (globalConfig === null) {
+      globalConfig = new GlobalConfig();
+    }
+    return globalConfig;
+  } catch (e) {
+    throw e;
+  }
+}
 
 /**
  * shutdown - Safely shutdown bot
@@ -25,25 +48,16 @@ function shutdown(client) {
  * @param  {Client} client Discord.js Client object
  */
 async function save(client) {
-  let db;
   try {
-    db = await MongoClient.connect(config.get('mongodb.url'));
-    let setting = {
-      'Setting': 'connections'
-    };
-    let result = await db.collection('global_config').findOne(setting);
-    result.connections = [];
+    const globalConfig = await _getGlobalConfig();
+    let connections = [];
     for (let vc of client.voiceConnections) {
-      result.connections.push(vc[1].channel.id);
+      connections.push(vc[1].channel.id);
     }
-    await db.collection('global_config').updateOne(setting, result);
-    LOGGER.info('Connections saved!');
-  } catch (err) {
-    LOGGER.error(`Failed to save connections\n${err}`);
-  } finally {
-    if (db) {
-      db.close();
-    }
+    await globalConfig.updateConnections(connections);
+    await globalConfig.save();
+  } catch (e) {
+    throw e;
   }
 }
 
@@ -57,11 +71,7 @@ async function save(client) {
 async function reconnect(client) {
   let db;
   try {
-    db = await MongoClient.connect(config.get('mongodb.url'));
-    let setting = {
-      'Setting': 'connections'
-    };
-    let result = await db.collection('global_config').findOne(setting);
+    let result = await _getGlobalConfig();
     let promises = [];
     for (let server of result.connections) {
       let def = Promise.defer();

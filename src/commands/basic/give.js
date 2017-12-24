@@ -61,14 +61,12 @@ function _isValidTransfer(amount, total) {
  * @param {Message} message A Discord.js Message object
  */
 async function _doTransaction(sender, receiver, sendAmount, message) {
-  const currencyType = await currency.getCurrencyType(sender.guild);  
+  const currencyType = await currency.getCurrencyType(sender.guild);
   if (!await _hasEnoughCurrency(sendAmount, sender)) {
     message.reply(`You don't have enough ${currencyType}`);
     return;
   }
-  if (await currency.add(sender, -1 * sendAmount)) {
-    await currency.add(receiver, sendAmount);
-  }
+  await currency.transfer(sender, receiver, sendAmount);
   const rName = utils.getName(receiver);
   const sName = utils.getName(sender);
   message.channel.send(
