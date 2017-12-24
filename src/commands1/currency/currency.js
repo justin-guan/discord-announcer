@@ -5,11 +5,11 @@ const config = require(__dirname + '/../../../config/config.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
 
 /**
- * add - Add to a user's currency amount in MongoDB
+ * changeGuildCurrencyType - Add to a user's currency amount in MongoDB
  *
  * @param  {Member} member   A Discord.js Member object
- * @param  {Integer} amount The amount of currency to add
- * @return {Boolean}        True if successful add, false otherwise
+ * @param  {Integer} amount The amount of currency to changeGuildCurrencyType
+ * @return {Boolean} True if successful changeGuildCurrencyType, false otherwise
  */
 async function add(member, amount) {
   let db;

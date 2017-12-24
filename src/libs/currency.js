@@ -1,162 +1,127 @@
-'use strict';
-
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
+mongoose.Promise = global.Promise; // require('bluebird');
+const Guild = require(__dirname + '/../models/guild.js');
 const config = require(__dirname + '/../../config/config.js');
-const LOGGER = require(__dirname + '/logger.js');
+
+mongoose.connect(config.get('mongodb.url'), {useMongoClient: true}, (err) => {
+  if (err) {
+    throw err;
+  }
+});
 
 /**
- * add - Add to a user's currency amount in MongoDB
+ * _getQueryGuild - Gets the query guild for a Mongoose query
  *
- * @param  {Member} member   A Discord.js Member object
- * @param  {Integer} amount The amount of currency to add
- * @return {Boolean}        True if successful add, false otherwise
+ * @param {String} id The guild id
+ * @return {JSON} A JSON object with the query guild
  */
-async function add(member, amount) {
-  let db;
+function _getQueryGuild(id) {
+  return {
+    _id: id
+  };
+}
+
+/**
+ * _getGuild - Gets the Mongoose guild object
+ * @param {String} id The guild id
+ * @return {Guild} A Mongoose Guild object corresponding to the given id
+ */
+async function _getGuild(id) {
   try {
-    db = await MongoClient.connect(config.get('mongodb.url'));
-    let guild = {
-      'Guild': member.guild.id
-    };
-    let result = await db.collection('guilds').findOne(guild);
-    if (!result) {
-      await _createDefaultGuild(member.guild);
-      result = await db.collection('guilds').findOne(guild);
+    const queryGuild = _getQueryGuild(id);
+    let guild = await Guild.findOne(queryGuild);
+    if (guild === null) {
+      guild = new Guild(queryGuild);
     }
-    if (result.hasOwnProperty(member.id)) {
-      result[member.id] += amount;
-    } else {
-      result[member.id] = amount;
-    }
-    await db.collection('guilds').updateOne(guild, result);
-    return true;
-  } catch (err) {
-    LOGGER.error(err);
-    return false;
-  } finally {
-    if (db) {
-      db.close();
-    }
+    return guild;
+  } catch (e) {
+    throw e;
   }
 }
 
 /**
- * get - Get the amount of currency for a member
+ * add - Add to a user's currency amount in MongoDB
  *
- * @param  {Member} member A Discord.js Member object
- * @return {Integer}        The amount of currency a member has
+ * @param {Member} member A Discord.js Member object
+ * @param {Integer} amount The amount of currency to add
+ */
+async function add(member, amount) {
+  try {
+    const guild = await _getGuild(member.guild.id);
+    guild.addUserCurrency(member.id, amount);
+    guild.save();
+  } catch (e) {
+    throw e;
+  }
+}
+
+/**
+ * transfer - Transfer currency from the sender to receiver
+ * @param {Member} sender The Discord.js Member that is the sender
+ * @param {Member} receiver The Discord.js Member that is the receiver
+ * @param {Integer} amount The amount of currency to send to the receiver
+ */
+async function transfer(sender, receiver, amount) {
+  try {
+    const guild = await _getGuild(sender.guild.id);
+    guild.addUserCurrency(sender.id, -1 * amount);
+    guild.addUserCurrency(receiver.id, amount);
+    guild.save();
+  } catch (e) {
+    throw e;
+  }
+}
+
+/**
+ * get - Get the user's currency amount in MongoDB
+ *
+ * @param {Member} member A Discord.js Member object
+ * @return {Integer} The amount of currency a user has
  */
 async function get(member) {
-  let db;
   try {
-    db = await MongoClient.connect(config.get('mongodb.url'));
-    let guild = {
-      'Guild': member.guild.id
-    };
-    let result = await db.collection('guilds').findOne(guild);
-    if (!result) {
-      await _createDefaultGuild(member.guild);
-      return 0;
-    } else if (result.hasOwnProperty(member.id)) {
-      return result[member.id];
-    }
-    return 0;
-  } catch (err) {
-    LOGGER.error(err);
-    return null;
-  } finally {
-    if (db) {
-      db.close();
-    }
+    const guild = await _getGuild(member.guild.id);
+    guild.save();
+    return guild.getUserCurrency(member.id);
+  } catch (e) {
+    throw e;
   }
 }
 
 /**
  * getCurrencyType - Gets the currency type for a guild
  *
- * @param  {Guild} guild A Discord.js Guild object
+ * @param  {Guild} g A Discord.js Guild object
  * @return {String}       The currency name the guild is using
  */
-async function getCurrencyType(guild) {
-  let db;
+async function getCurrencyType(g) {
   try {
-    db = await MongoClient.connect(config.get('mongodb.url'));
-    let g = {
-      'Guild': guild.id
-    };
-    let result = await db.collection('guilds').findOne(g);
-    if (!result) {
-      await _createDefaultGuild(guild);
-      result = await db.collection('guilds').findOne(g);
-    }
-    return result.currency;
-  } catch (err) {
-    LOGGER.error(err);
-    return null;
-  } finally {
-    if (db) {
-      db.close();
-    }
+    const guild = await _getGuild(g.id);
+    guild.save();
+    return guild.currency.type;
+  } catch (e) {
+    throw e;
   }
 }
 
 /**
  * setCurrencyType - Changes the name of the currency used in a guild
  *
- * @param  {Guild} guild A Discord.js Guild object
+ * @param  {Guild} g A Discord.js Guild object
  * @param  {String} type  The name of the new currenct to use
  */
-async function setCurrencyType(guild, type) {
-  let db;
+async function setCurrencyType(g, type) {
   try {
-    db = await MongoClient.connect(config.get('mongodb.url'));
-    let g = {
-      'Guild': guild.id
-    };
-    let result = await db.collection('guilds').findOne(g);
-    if (!result) {
-      await _createDefaultGuild(guild);
-      result = await db.collection('guilds').findOne(g);
-    }
-    result.currency = type;
-    await db.collection('guilds').updateOne(g, result);
-  } catch (err) {
-    LOGGER.error(err);
-  } finally {
-    if (db) {
-      db.close();
-    }
-  }
-}
-
-/**
- * createDefaultGuild - Creates a default document for a guild in MongoDB
- *
- * @param  {Guild} g A Discord.js Guild object
- */
-async function _createDefaultGuild(g) {
-  let db;
-  try {
-    db = await MongoClient.connect(config.get('mongodb.url'));
-    let guild = {
-      'Guild': g.id
-    };
-    let result = await db.collection('guilds').findOne(guild);
-    if (!result) {
-      result = guild;
-      result.currency = 'gold';
-      await db.collection('guilds').insertOne(guild, result);
-    }
-  } catch (err) {
-    LOGGER.error(err);
-  } finally {
-    if (db) {
-      db.close();
-    }
+    const guild = await _getGuild(g.id);
+    guild.currency.type = type;
+    guild.save();
+  } catch (e) {
+    throw e;
   }
 }
 
 exports.add = add;
 exports.get = get;
+exports.transfer = transfer;
 exports.getCurrencyType = getCurrencyType;
 exports.setCurrencyType = setCurrencyType;
