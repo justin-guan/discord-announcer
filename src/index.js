@@ -9,10 +9,12 @@ const announcer = require(__dirname + '/libs/announcer.js');
 const config = require(__dirname + '/../config/config.js');
 const util = require(__dirname + '/libs/util.js');
 const validate = require(__dirname + '/libs/validate.js');
+const database = require(__dirname + '/libs/database.js');
 
 const basicCommandFiles = fs.readdirSync(__dirname + '/commands/basic');
 const adminCommandFiles = fs.readdirSync(__dirname + '/commands/admin');
 client.commands = new Discord.Collection();
+client.customCommands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 client.collectors = new Discord.Collection();
 
@@ -26,7 +28,13 @@ for (const file of adminCommandFiles) {
   client.commands.set(command.name, command);
 }
 
-(function init() {
+(async function init() {
+  const guilds = await database.getAllGuilds();
+  for (const guild of guilds) {
+    for (const command of guild.commands) {
+      util.setUpCommand(client, command, guild._id);
+    }
+  }
   client.login(config.get('discord.token'))
     .then(LOGGER.info('Client login success'))
     .catch(LOGGER.error);
@@ -84,6 +92,24 @@ client.on('message', async (message) => {
     setTimeout(() => guildCooldowns.get(memberId).delete(commandName),
       cooldown);
     client.commands.get(command).execute(msg, args);
+  } catch (e) {
+    LOGGER.warn(`Failed to execute command ${message.content}`);
+    LOGGER.warn(e);
+  }
+});
+
+client.on('message', async (message) => {
+  const args = message.content.slice(config.get('command.trigger').length)
+    .split(/\s+/);
+  const command = args.shift().toLowerCase();
+  if (message.guild === null || !validate.isValidCommand(message,
+    command,
+    client.customCommands.get(message.guild.id))) {
+    return;
+  }
+  try {
+    const msg = await message.delete();
+    client.customCommands.get(message.guild.id).get(command).execute(msg);
   } catch (e) {
     LOGGER.warn(`Failed to execute command ${message.content}`);
     LOGGER.warn(e);

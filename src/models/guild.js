@@ -16,6 +16,12 @@ const guildSchema = new Schema({
   users: [{
     _id: String,
     currencyAmount: Number
+  }],
+  commands: [{
+    name: String,
+    description: String,
+    type: {type: Number},
+    action: String
   }]
 });
 
@@ -39,6 +45,15 @@ guildSchema.methods.getUserCurrency = function(memberId) {
     }
   }
   return 0;
+};
+
+guildSchema.methods.addNewCommand = function(newCommand) {
+  for (command of this.commands) {
+    if (command.name === newCommand.name) {
+      throw new Error(`Tried adding already existing command: ${newCommand}`);
+    }
+  }
+  this.commands.push(newCommand);
 };
 
 module.exports = mongoose.model('Guild', guildSchema);

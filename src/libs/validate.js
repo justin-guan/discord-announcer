@@ -20,7 +20,7 @@ function isValidCommand(message, command, commandList) {
  * @return {Boolean} True if is valid, false otherwise
  */
 function _isCommand(command, commandList) {
-  return commandList.has(command);
+  return commandList !== undefined && commandList.has(command);
 }
 
 /**

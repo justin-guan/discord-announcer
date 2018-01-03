@@ -1,7 +1,16 @@
+const util = require(__dirname + '/../../libs/util.js');
 const utils = require(__dirname + '/../helpers/util.js');
 const currency = require(__dirname + '/../../libs/currency.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
 const config = require(__dirname + '/../../../config/config.js');
+const Guild = require(__dirname + '/../../models/guild.js');
+const mongoose = require('mongoose');
+
+mongoose.connect(config.get('mongodb.url'), {useMongoClient: true}, (err) => {
+  if (err) {
+    throw err;
+  }
+});
 
 /**
  * _isValidName - Checks if the name has invalid characters
@@ -36,6 +45,9 @@ function _commandAlreadyExists(msg) {
 function _isValidCommandName(msg) {
   if (!_isValidName(msg.content)) {
     msg.author.send('Invalid name. Please enter a new one');
+    return false;
+  } else if (msg.content.includes(' ')) {
+    msg.author.send('The name cannot contain spaces. Please enter a new one');
     return false;
   }
   return !_commandAlreadyExists(msg);
@@ -233,7 +245,6 @@ function _collectAction(msg, type, command) {
 function _isValidConfirmation(msg) {
   let valid = false;
   if (msg.content.toLowerCase().replace(/\s/g, '') === 'y') {
-    msg.author.send('We did it!');
     msg.client.collectors.delete(msg.author.id);
     valid = true;
   } else if (msg.content.toLowerCase().replace(/\s/g, '') === 'n') {
@@ -245,71 +256,50 @@ function _isValidConfirmation(msg) {
 }
 
 /**
- * _playFile - Plays a music file to the user who invoked the command's voice
- * channel.
+ * _getQueryGuild - Gets the query guild for a Mongoose query
  *
- * @param  {Message} message A Discord.js Message object
- * @param  {String} url Path to the audio file that will be played.
+ * @param {String} id The guild id
+ * @return {JSON} A JSON object with the query guild
  */
-async function _playFile(message, url) {
+function _getQueryGuild(id) {
+  return {
+    _id: id
+  };
+}
+
+/**
+ * _getGuild - Gets the Mongoose guild object
+ * @param {String} id The guild id
+ * @return {Guild} A Mongoose Guild object corresponding to the given id
+ */
+async function _getGuild(id) {
   try {
-    const connection = await message.member.voiceChannel.join();
-    connection.playStream(url);
+    const queryGuild = _getQueryGuild(id);
+    let guild = await Guild.findOne(queryGuild);
+    if (guild === null) {
+      guild = new Guild(queryGuild);
+    }
+    return guild;
   } catch (e) {
-    LOGGER.error(e);
+    throw e;
   }
 }
 
 /**
- * _setUpCommandJsonExecuteForAudio - Wraps the execute command for an
- * audio command in JSON
+ * _saveCommand - Saves the command to MongoDB
  *
- * @param {JSON} command The command info for the custom command
- * @return {JSON} Returns the JSON object for the custom command with only the
- * execute function in it
+ * @param {String} id The guild id which the command will correspond to
+ * @param {JSON} command The command info for the custom command. The JSON
+ * object must contain name, type, description, and action.
  */
-function _setUpCommandJsonExecuteForAudio(command) {
-  return {
-    execute(message) {
-      _playFile(message, command.action);
-    },
-  };
-}
-
-/**
- * _setUpCommandJsonExecuteForText - Wraps the execute command for a
- * text command in JSON
- *
- * @param {JSON} command The command info for the custom command
- * @return {JSON} Returns the JSON object for the custom command with only the
- * execute function in it
- */
-function _setUpCommandJsonExecuteForText(command) {
-  return {
-    execute(message) {
-      message.reply(command.action);
-    },
-  };
-}
-
-/**
- * _setUpCommandJson - Sets up the JSON structure to store in the client
- * for the command
- *
- * @param {JSON} command The command info for the custom command
- * @return {JSON} Returns the JSON object for the command that will be stored
- * in the client
- */
-function _setUpCommandJson(command) {
-  let json;
-  if (command.type === 1) {
-    json = _setUpCommandJsonExecuteForAudio(command);
-  } else {
-    json = _setUpCommandJsonExecuteForText(command);
+async function _saveCommand(id, command) {
+  try {
+    const guild = await _getGuild(id);
+    await guild.addNewCommand(command);
+    await guild.save();
+  } catch (e) {
+    throw e;
   }
-  json.name = command.name;
-  json.description = command.description;
-  return json;
 }
 
 /**
@@ -317,10 +307,17 @@ function _setUpCommandJson(command) {
  *
  * @param {Message} msg A Discord.js Message object
  * @param {JSON} command The command info for the custom command
+ * @param {String} guildIdForCommand The guild id to save the command for
  */
-function _setUpCommand(msg, command) {
-  const custom = _setUpCommandJson(command);
-  msg.client.commands.set(command.name, custom);
+async function _setUpCommand(msg, command, guildIdForCommand) {
+  try {
+    await _saveCommand(guildIdForCommand, command);
+    util.setUpCommand(msg.client, command, guildIdForCommand);
+    msg.author.send('Command successfully created!');
+  } catch (e) {
+    msg.reply('Failed to save the command, please try again later');
+    LOGGER.error(`Failed to save command\n${e}`);
+  }
 }
 
 /**
@@ -328,13 +325,14 @@ function _setUpCommand(msg, command) {
  *
  * @param {Message} msg A Discord.js Message object
  * @param {JSON} command The command info for the custom command
+ * @param {String} guildIdForCommand The guild id to save the command for
  * @return {Boolean} True if the collector should be destroyed, false
  * otherwise.
  */
-function _createCommand(msg, command) {
+function _createCommand(msg, command, guildIdForCommand) {
   let shouldDestroyCollector = false;
   if (_isValidConfirmation(msg)) {
-    _setUpCommand(msg, command);
+    _setUpCommand(msg, command, guildIdForCommand);
     shouldDestroyCollector = true;
   } else {
     msg.author.send('Please choose Y/N');
@@ -347,8 +345,9 @@ function _createCommand(msg, command) {
  * creation
  * @param {Channel} dmChannel A Discord.js DM Channel
  * @param {String} authorId The Discord ID number of the user
+ * @param {String} guildIdForCommand The guild id for the command to apply to
  */
-function _startCommandCreation(dmChannel, authorId) {
+function _startCommandCreation(dmChannel, authorId, guildIdForCommand) {
   const collector = dmChannel.createMessageCollector(
     (m) => m.author.id === authorId
   );
@@ -385,7 +384,7 @@ function _startCommandCreation(dmChannel, authorId) {
         }
         break;
       case 4: // Create
-        if (_createCommand(msg, command)) {
+        if (_createCommand(msg, command, guildIdForCommand)) {
           collector.stop();
         }
         break;
@@ -428,7 +427,7 @@ module.exports = {
       const dm = await message.author.send(
         `Creating a command in ${message.guild.name}`);
       message.client.collectors.set(message.author.id, true);
-      _startCommandCreation(dm.channel, message.author.id);
+      _startCommandCreation(dm.channel, message.author.id, message.guild.id);
     } catch (err) {
       LOGGER.error(err);
     }

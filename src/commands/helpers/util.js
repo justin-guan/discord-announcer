@@ -17,6 +17,9 @@ function getName(member) {
  */
 function isAdmin(member, guild) {
   const adminRole = guild.roles.find('name', 'Admin');
+  if (adminRole === null || adminRole.id === null) {
+    return false;
+  }
   return member.roles.has(adminRole.id);
 }
 
