@@ -38,6 +38,7 @@ function _isValidUsage(message, args) {
 }
 
 module.exports = {
+  admin: true,
   name: 'set-currency',
   description: 'An admin command to set the name of the guild currency',
   async execute(message, args) {

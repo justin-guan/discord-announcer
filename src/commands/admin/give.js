@@ -39,6 +39,7 @@ function _isValidUsage(message, args) {
 }
 
 module.exports = {
+  admin: true,
   name: 'admin-give',
   description: 'An admin command to give currency to a user',
   async execute(message, args) {
