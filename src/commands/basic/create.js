@@ -1,5 +1,4 @@
 const util = require(__dirname + '/../../libs/util.js');
-const utils = require(__dirname + '/../helpers/util.js');
 const currency = require(__dirname + '/../../libs/currency.js');
 const LOGGER = require(__dirname + '/../../libs/logger.js');
 const config = require(__dirname + '/../../../config/config.js');
@@ -331,8 +330,11 @@ async function _setUpCommand(msg, command, guildIdForCommand) {
  */
 function _createCommand(msg, command, guildIdForCommand) {
   let shouldDestroyCollector = false;
-  if (_isValidConfirmation(msg)) {
+  const confirmation = msg.content.toLowerCase().replace(/\s/g, '');
+  if (_isValidConfirmation(msg) && confirmation === 'y') {
     _setUpCommand(msg, command, guildIdForCommand);
+    shouldDestroyCollector = true;
+  } else if (confirmation === 'n') {
     shouldDestroyCollector = true;
   } else {
     msg.author.send('Please choose Y/N');
@@ -417,8 +419,8 @@ async function _shouldAllowCommandCreation(message) {
 
 module.exports = {
   name: 'create',
-  description: 'Create a custom command',
-  cost: 10,
+  description: 'Create a custom command ***beta***',
+  cost: 0,
   async execute(message) {
     if (!await _shouldAllowCommandCreation(message)) {
       return;
