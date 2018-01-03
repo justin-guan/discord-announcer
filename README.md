@@ -47,28 +47,13 @@ There are other environment variables that can be set. See the [environments var
 
 <a name="commands"></a>
 ## Basic Commands
-* `!help` - Links to Github documentation
-* `!commands` - Prints a list of commands
+* `!help` - Prints a list of commands
+* `!ping` - Pong!
 * `!summon` - Summons the bot into the caller's voice channel
 * `!banish` - Forces the bot to leave the voice channel it is connected to
 * `!give <User> <Positive Num>` - Give guild currency to user
 * `!mug <User>` - Attempts to steal guild currency from a user
-* `!currency` - Check current guild currency
-* `!ld` - Plays "They're all dead!"
-* `!tucker` - Plays crybaby
-* `!tobi` - Plays "It's a disastah!"
-* `!zhou` - Plays "Patience from zhou"
-* `!waow` - Plays "WAOW!"
-* `!theplay` - Plays beginning of The Play
-* `!noone` - Plays noone.wav
-* `!price` - Plays the beginning of the Price is Right theme song
-* `!duel` - Plays "It's time to duel"
-* `!free` - Plays "Free game so no bitching"
-* `!cyka` - Plays cyka.wav
-* `!wtf` - Plays wtf.wav
-* `!shut` - Plays shut.wav
-* `!minorities` - Plays minorities.wav
-* `!doro` - Plays doro.wav
+* `!create` - Create a custom command ***beta***
 
 ## Admin Commands
 * `!adminGive <User> <Integer>` - Gives a user <Integer> of guild currency
