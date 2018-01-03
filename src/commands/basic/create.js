@@ -425,7 +425,11 @@ module.exports = {
     }
     try {
       const dm = await message.author.send(
-        `Creating a command in ${message.guild.name}`);
+        `Creating a command in guild ${message.guild.name}\n` +
+        'Note that this is a beta feature and things might go wrong. ' +
+        'Please report any bugs you find, in the doggo-suggestions channel ' +
+        'or by creating a bug on Github.\n'
+      );
       message.client.collectors.set(message.author.id, true);
       _startCommandCreation(dm.channel, message.author.id, message.guild.id);
     } catch (err) {
