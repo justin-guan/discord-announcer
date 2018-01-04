@@ -84,7 +84,7 @@ async function _removeCommand(command, guildIdForCommand) {
 
 module.exports = {
   name: 'delete',
-  description: 'Delete a custom command',
+  description: 'Delete a custom command ***beta***',
   async execute(message, args) {
     if (!_isValidUsage(message, args)) {
       return;
