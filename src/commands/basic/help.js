@@ -12,10 +12,12 @@ module.exports = {
         commands.push(`**${trigger}${command.name}** - ${command.description}`);
       }
     });
-    commands.push('\n***__Custom Commands__***');
-    message.client.customCommands.get(message.guild.id).map((command) => {
-      commands.push(`**${trigger}${command.name}** - ${command.description}`);
-    });
+    if (message.client.customCommands.has(message.guild.id)) {
+      commands.push('\n***__Custom Commands__***');
+      message.client.customCommands.get(message.guild.id).map((command) => {
+        commands.push(`**${trigger}${command.name}** - ${command.description}`);
+      });
+    }
     message.channel.send(commands, {split: true});
   },
 };

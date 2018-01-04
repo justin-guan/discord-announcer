@@ -56,4 +56,10 @@ guildSchema.methods.addNewCommand = function(newCommand) {
   this.commands.push(newCommand);
 };
 
+guildSchema.methods.removeCommand = function(commandToRemove) {
+  this.commands = this.commands.filter((command) => {
+    return command.name !== commandToRemove;
+  });
+};
+
 module.exports = mongoose.model('Guild', guildSchema);

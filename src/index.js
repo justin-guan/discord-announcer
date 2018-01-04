@@ -137,3 +137,11 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 client.on('warn', (info) => {
   LOGGER.warn(info);
 });
+
+client.on('guildCreate', (guild) => {
+  client.user.setGame(`in ${client.guilds.size} servers`);
+});
+
+client.on('guildDelete', (guild) => {
+  client.user.setGame(`in ${client.guilds.size} servers`);
+});
