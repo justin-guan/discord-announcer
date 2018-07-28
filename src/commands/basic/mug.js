@@ -77,7 +77,7 @@ function _doMugging(target, message) {
 module.exports = {
   name: 'mug',
   description: 'Commit crime by mugging someone...',
-  cooldown: 60000,
+  cooldown: 600,
   async execute(message, args) {
     if (!_isValidUsage(message, args)) {
       return;
