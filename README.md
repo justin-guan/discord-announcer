@@ -1,4 +1,7 @@
 # discord-announcer
+
+<b>This repo is no longer being maintained. I wanted to rewrite this bot in Typescript so that it would be easier to maintain. A rewritten and updated version of this bot can be found [here](https://github.com/justin-guan/discord-doggo). I highly encourage everyone to check out that project instead as it's much more up to date than this one. </b>
+
 This is a node.js bot for discord that announces when a user enters or leaves a voice channel. This bot works using the Voice RSS API to generate announcements. As of v2.0.0, this bot has multi server support.
 
 * [Requirements](#requirements)
