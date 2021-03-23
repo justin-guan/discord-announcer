@@ -61,7 +61,7 @@ if (!conf.get('mongodb.url')) {
 }
 
 let url = conf.get('voiceRSS.url')
-              .replace('[VOICE_KEY]', conf.get('voiceRSS.key'));
+  .replace('[VOICE_KEY]', conf.get('voiceRSS.key'));
 conf.set('voiceRSS.url', url);
 
 conf.validate();

@@ -36,8 +36,8 @@ async function _onSuccessfulMug(target, message) {
       amountStolen = Math.round(utils.random(0.01, 0.3) * targetTotal);
     }
     await currency.transfer(target, mugger, amountStolen);
-    message.reply(`Mugged ${target.toString()} and got ${amountStolen} `+
-    `${await currency.getCurrencyType(target.guild)}`);
+    message.reply(`Mugged ${target.toString().substring(1)} and got ${amountStolen} ` +
+      `${await currency.getCurrencyType(target.guild)}`);
     LOGGER.info(`${utils.getName(target)} (${target.id}) was mugged by ` +
       `${utils.getName(mugger)} (${mugger.id})`);
   } catch (err) {
@@ -54,8 +54,8 @@ async function _onSuccessfulMug(target, message) {
  */
 function _onUnsuccessfulMug(target, message) {
   const mugger = message.member;
-  message.channel.send(`${target.toString()} repelled ` +
-  `${mugger.toString()}'s mugging`);
+  message.channel.send(`${target.toString().substring(1)} repelled ` +
+    `${mugger.toString().substring(1)}'s mugging`);
   LOGGER.info(`${utils.getName(target)} (${target.id}) repelled ` +
     `${utils.getName(mugger)}(${mugger.id})'s mugging`);
 }
@@ -77,12 +77,13 @@ function _doMugging(target, message) {
 module.exports = {
   name: 'mug',
   description: 'Commit crime by mugging someone...',
-  cooldown: 600,
+  cooldown: 0,
   async execute(message, args) {
     if (!_isValidUsage(message, args)) {
       return;
     }
     const target = message.mentions.members.first();
     _doMugging(target, message);
+    cooldown = 600;
   },
 };
